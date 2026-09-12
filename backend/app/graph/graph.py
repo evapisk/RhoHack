@@ -201,7 +201,14 @@ class TransactionGraph:
         return cps[:n]
 
     def to_node_link(self) -> dict[str, Any]:
-        """JSON-friendly node/edge lists for the frontend graph view."""
-        nodes = [{"id": nid, **attrs} for nid, attrs in self.g.nodes(data=True)]
-        edges = [{"source": u, "target": v, **attrs} for u, v, attrs in self.g.edges(data=True)]
+        """JSON-friendly node/edge lists for the frontend graph view.
+
+        The graph key (`nid`, e.g. "account:<rho id>" / "counterparty:<key>") must win
+        as the `id` field: it's what edges' source/target reference. AccountNode also
+        has its own `id` attribute holding the raw (unprefixed) Rho account id, so
+        `{"id": nid, **attrs}` would let `attrs["id"]` silently clobber `nid` and orphan
+        every edge touching an account. Attrs go first, graph-truth fields go last.
+        """
+        nodes = [{**attrs, "id": nid} for nid, attrs in self.g.nodes(data=True)]
+        edges = [{**attrs, "source": u, "target": v} for u, v, attrs in self.g.edges(data=True)]
         return {"nodes": nodes, "edges": edges, "stats": self.stats()}

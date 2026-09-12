@@ -52,6 +52,22 @@ def test_node_link_is_json_friendly(fixture_graph):
     assert kinds == {"account", "counterparty"}
     assert all({"source", "target", "tx_count"} <= set(e) for e in payload["edges"])
 
+    # AccountNode carries the raw Rho account id under its own "id" attribute, which
+    # collides with the node-link "id" field (the graph key edges reference). Getting
+    # the merge order wrong there silently orphans every edge touching an account --
+    # assert every edge's endpoints actually resolve to a node, not just that the
+    # keys are present.
+    node_ids = {n["id"] for n in payload["nodes"]}
+    assert node_ids, "no nodes at all would make the endpoint-resolution check vacuous"
+    dangling = [e for e in payload["edges"] if e["source"] not in node_ids or e["target"] not in node_ids]
+    assert not dangling, f"edges with an endpoint missing from nodes[]: {dangling[:3]}"
+
+    # Every account node's id must be the prefixed graph key, not the bare Rho id
+    # AccountNode.to_attrs() also happens to expose under the same "id" name.
+    for n in payload["nodes"]:
+        if n["kind"] == "account":
+            assert n["id"].startswith("account:"), n
+
 
 def test_new_counterparty_flag_flips_after_first_apply():
     graph = TransactionGraph()
