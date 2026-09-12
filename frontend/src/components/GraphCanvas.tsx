@@ -1,6 +1,49 @@
 import type { PositionedGraph, PositionedNode } from '../graph/layout'
 import type { Level } from '../types'
 
+interface LabelBox {
+  x: number
+  y: number
+  halfW: number
+  halfH: number
+}
+
+const boxesOverlap = (a: LabelBox, b: LabelBox): boolean =>
+  Math.abs(a.x - b.x) < a.halfW + b.halfW && Math.abs(a.y - b.y) < a.halfH + b.halfH
+
+const estHalfLabelWidth = (text: string): number => Math.min(90, 8 + text.length * 3.3)
+
+/**
+ * The force layout only keeps *nodes* apart; nothing stops two nearby nodes' labels
+ * (each independently offset below/above its own node) from landing on the same spot,
+ * which happens routinely here since several accounts share a display name (two
+ * distinct accounts both called "Rewards", etc.) and cluster together via internal
+ * transfers. Greedily place each label at the first non-colliding candidate offset,
+ * visiting higher-priority nodes (already fixed, then busiest) first so the labels
+ * that matter most keep their natural spot below the node.
+ */
+function placeLabels(
+  candidates: { node: PositionedNode; text: string; baseY: number }[],
+  fixed: LabelBox[] = [],
+): Map<string, number> {
+  const placed: LabelBox[] = [...fixed]
+  const result = new Map<string, number>()
+  const halfH = 8
+  for (const { node, text, baseY } of candidates) {
+    const halfW = estHalfLabelWidth(text)
+    const candidateOffsets = [baseY, -baseY, baseY + 15, -baseY - 15, baseY + 30]
+    let chosen = candidateOffsets[0]
+    for (const offset of candidateOffsets) {
+      const box: LabelBox = { x: node.x, y: node.y + offset, halfW, halfH }
+      chosen = offset
+      if (!placed.some((p) => boxesOverlap(p, box))) break
+    }
+    result.set(node.id, chosen)
+    placed.push({ x: node.x, y: node.y + chosen, halfW, halfH })
+  }
+  return result
+}
+
 export interface GraphHighlight {
   accountNodeId: string | null
   counterpartyNodeId: string | null
@@ -50,8 +93,25 @@ export function GraphCanvas({ layout, highlight }: Props) {
     const max = focus.has(n.id) ? 34 : 20
     return n.label.length > max ? `${n.label.slice(0, max - 1)}…` : n.label
   }
+
+  // The lookalike vendor's above-node placement is deliberate and non-negotiable (see
+  // comment above); treat it as a fixed obstacle and greedily place every other shown
+  // label around it, busiest/focused first, so the labels that matter most keep their
+  // natural spot and only the lower-priority ones get displaced when two collide.
+  const shown = layout.nodes.filter(showLabel)
+  const lookalike = shown.find((n) => n.id === highlight?.lookalikeNodeId)
+  const fixedBoxes: LabelBox[] = lookalike
+    ? [{ x: lookalike.x, y: lookalike.y - lookalike.r - 18, halfW: estHalfLabelWidth(labelText(lookalike)), halfH: 8 }]
+    : []
+  const movable = shown
+    .filter((n) => n.id !== highlight?.lookalikeNodeId)
+    .sort((a, b) => (focus.has(b.id) ? 1 : 0) - (focus.has(a.id) ? 1 : 0) || b.tx_count - a.tx_count)
+  const labelOffsets = placeLabels(
+    movable.map((node) => ({ node, text: labelText(node), baseY: node.r + 15 })),
+    fixedBoxes,
+  )
   const labelY = (n: PositionedNode) =>
-    n.id === highlight?.lookalikeNodeId ? -n.r - 18 : n.r + 15
+    n.id === highlight?.lookalikeNodeId ? -n.r - 18 : (labelOffsets.get(n.id) ?? n.r + 15)
 
   return (
     <svg

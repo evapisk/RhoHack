@@ -113,7 +113,11 @@ export function layoutGraph(
       forceLink<PositionedNode, LinkDatum>(links)
         .id((d) => d.id)
         // Pull an impostor tight against the vendor it imitates, so the two land adjacent.
-        .distance((d) => (d.lookalike ? 52 : d.internal ? 56 : 92))
+        // Internal transfers commonly chain several same-named accounts together (e.g.
+        // two distinct accounts both called "Rewards", plus an ambiguous-resolution
+        // node also called "Rewards") -- a short distance here packs an already
+        // label-dense, same-text cluster even tighter, so it needs more room, not less.
+        .distance((d) => (d.lookalike ? 52 : d.internal ? 78 : 92))
         .strength((d) => (d.lookalike ? 1 : 0.4)),
     )
     .force('charge', forceManyBody().strength(-320).distanceMax(340))
@@ -128,19 +132,21 @@ export function layoutGraph(
       // circle/square, but a label's text extends further, so without headroom here
       // the *labels* still end up overlapping a neighboring node.
       forceCollide<PositionedNode>()
-        .radius((d) => d.r + (d.kind === 'account' ? 38 : 16))
+        .radius((d) => d.r + (d.kind === 'account' ? 46 : 30))
         .strength(1),
     )
   sim.stop()
   sim.tick(ticks)
 
-  // Account nodes are always labeled (see GraphCanvas), and text-anchor="middle" means
-  // a long name like "Reserve Checking" extends well past the node's own radius on
-  // both sides -- clamping only to `r` let labels get clipped by the canvas edge.
-  // Vendor labels are shorter-lived (busiest few, or a focused highlight) so a smaller
-  // fixed pad is enough for them.
+  // Every account is always labeled (see GraphCanvas), and the busiest vendors are
+  // labeled by default too -- text-anchor="middle" means a long name like "Reserve
+  // Checking" or "Rho Rewards" extends well past the node's own radius on both sides,
+  // so clamping only to `r` let labels get clipped by the canvas edge regardless of
+  // kind. GraphCanvas truncates an unfocused label to 20 chars, a focused one to 34;
+  // sizing for the longer case errs toward extra margin rather than risking clipping
+  // when a highlight changes which nodes are focused.
   const padY = 26
-  const estHalfLabelWidth = (n: PositionedNode) => (n.kind === 'account' ? Math.min(78, 10 + n.label.length * 3.3) : 14)
+  const estHalfLabelWidth = (n: PositionedNode) => Math.min(90, 10 + Math.min(n.label.length, 34) * 3.3)
   for (const n of nodes) {
     const halfW = Math.max(n.r, estHalfLabelWidth(n))
     n.x = Math.max(halfW, Math.min(width - halfW, n.x ?? width / 2))
