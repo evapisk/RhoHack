@@ -1,0 +1,10 @@
+allowBuilds:
+  esbuild: true
+
+# Pin rollup one patch behind latest: 4.63.2's platform binaries were all
+# published today, which trips pnpm's default 24h supply-chain freshness
+# guard on every install/dev command. 4.63.1 is functionally identical and
+# was published weeks ago, so this avoids the block without touching the
+# guard itself. Safe to bump back to "latest" after 2026-09-13.
+overrides:
+  rollup: 4.63.1

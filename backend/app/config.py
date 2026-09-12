@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     backfill_on_start: bool = True
     state_dir: Path = Path(".state")
     fixtures_dir: Path = Path("fixtures")
+    # Every Nth tick, also re-check every transaction last seen pending/awaiting_approval
+    # by id (see Poller.sweep_pending). The incremental tick alone won't catch a
+    # settlement on something older than the high-water mark.
+    pending_sweep_every_n_ticks: int = Field(default=6, ge=1)
 
     # Scoring
     scorer: Literal["zscore", "autoencoder"] = "zscore"
