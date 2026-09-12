@@ -130,7 +130,11 @@ export interface ScenarioSummary {
   blurb: string
   expected_level: Level
   step_count: number
+  /** Older backends omit it; treat that as a single scenario. */
+  kind?: ScenarioKind
 }
+
+export type ScenarioKind = 'scenario' | 'story'
 
 export interface ScenarioRun {
   scenario_id: string
@@ -143,6 +147,41 @@ export interface ScenarioRun {
   matched: boolean
   elapsed_ms: number
 }
+
+export interface StoryStageInfo {
+  title: string
+  narration: string
+}
+
+interface StoryFrame {
+  scenario_id: string
+  title: string
+}
+
+/** One `story` SSE frame, mirroring _publish_story in backend/app/demo/scenarios.py. */
+export type StoryEvent =
+  | (StoryFrame & { status: 'started'; stages: StoryStageInfo[] })
+  | (StoryFrame & { status: 'active'; stage: number })
+  | (StoryFrame & {
+      status: 'scored'
+      stage: number
+      transaction_id: string
+      transaction_status: string
+      level: Level
+      score: number
+      amount_minor: number
+      counterparty_name: string | null
+      impersonates: string | null
+      similarity: number | null
+    })
+  | (StoryFrame & {
+      status: 'finished'
+      intercepted_minor: number
+      alerts: number
+      warns: number
+      cleared: number
+      elapsed_ms: number
+    })
 
 export interface DemoResetResponse {
   reset: boolean

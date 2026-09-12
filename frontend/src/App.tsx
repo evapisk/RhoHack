@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchHealth, fetchRecent, useTransactionStream } from './api'
+import { AttackStory } from './components/AttackStory'
 import { DemoPanel } from './components/DemoPanel'
 import type { GraphHighlight } from './components/GraphCanvas'
 import { GraphView } from './components/GraphView'
 import { TransactionRow } from './components/TransactionRow'
-import type { Health, ScenarioRun, ScoredTransaction } from './types'
+import { applyStoryEvent, type StoryState } from './story'
+import type { Health, ScenarioRun, ScoredTransaction, StoryEvent } from './types'
 
 const MAX_ROWS = 500
 const rowKey = (s: ScoredTransaction) => `${s.event.transaction.id}:${s.event.transaction.status}`
@@ -30,6 +32,7 @@ export default function App() {
   const [graphKey, setGraphKey] = useState(0)
   const [projector, setProjector] = useState(false)
   const [showGraph, setShowGraph] = useState(readShowGraph)
+  const [story, setStory] = useState<StoryState | null>(null)
 
   const upsert = useCallback((incoming: ScoredTransaction[]) => {
     setRows((prev) => {
@@ -54,6 +57,7 @@ export default function App() {
   const clearFeed = useCallback(() => {
     setRows([])
     setSelectedKey(null)
+    setStory(null)
   }, [])
 
   useEffect(() => {
@@ -99,13 +103,19 @@ export default function App() {
       },
       // The backend rebuilt from the fixture; drop our rows so the replay lands.
       onReset: clearFeed,
+      onStory: (e: StoryEvent) => {
+        setStory((s) => applyStoryEvent(s, e))
+        // Focus the graph on each impostor the moment it is caught: the name-match link is the proof.
+        if (e.status === 'scored' && e.level === 'alert') setSelectedKey(`${e.transaction_id}:${e.transaction_status}`)
+      },
     }),
     [upsert, clearFeed, bumpGraph],
   )
   const status = useTransactionStream(handlers)
 
   const onScenarioResult = useCallback((run: ScenarioRun) => {
-    const flagged = run.results[0]
+    // The last flagged step, so a story ends focused on its final catch, not its first routine payment.
+    const flagged = [...run.results].reverse().find((r) => r.anomaly.level !== 'normal') ?? run.results[0]
     if (flagged) setSelectedKey(rowKey(flagged))
     bumpGraph()
   }, [bumpGraph])
@@ -200,6 +210,8 @@ export default function App() {
       </header>
 
       <DemoPanel onReset={clearFeed} onResult={onScenarioResult} />
+
+      {story && <AttackStory story={story} onDismiss={() => setStory(null)} />}
 
       {error && <div className="banner error">{error}</div>}
 

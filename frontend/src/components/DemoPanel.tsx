@@ -53,10 +53,27 @@ export function DemoPanel({ onReset, onResult }: Props) {
     }
   }
 
+  // A story is the headline act: it gets its own button, first, in ink.
+  const stories = scenarios.filter((s) => s.kind === 'story')
+  const singles = scenarios.filter((s) => s.kind !== 'story')
+  // For a multi-step run, show the score that earned its level, not the first step's.
+  const top = last ? ([...last.results].reverse().find((r) => r.anomaly.level === last.actual_level) ?? last.results[0]) : undefined
+
   return (
     <section className="demo-panel">
       <div className="demo-buttons">
-        {scenarios.map((s) => (
+        {stories.map((s) => (
+          <button
+            key={s.id}
+            className="demo-btn replay"
+            onClick={() => run(s.id)}
+            disabled={busy !== null}
+            title={s.blurb}
+          >
+            {busy === s.id ? 'playing…' : `▶ ${s.title}`}
+          </button>
+        ))}
+        {singles.map((s) => (
           <button
             key={s.id}
             className={`demo-btn ${s.expected_level}`}
@@ -78,7 +95,7 @@ export function DemoPanel({ onReset, onResult }: Props) {
         <div className="demo-result">
           <p className="blurb">{last.blurb}</p>
           <span className={`chip ${last.matched ? 'ok' : 'bad'} ${last.actual_level}`}>
-            {last.actual_level} {last.results[0] ? last.results[0].anomaly.score.toFixed(2) : ''}
+            {last.actual_level} {top ? top.anomaly.score.toFixed(2) : ''}
             {last.matched ? ' ✓ as expected' : ` ✗ expected ${last.expected_level}`}
           </span>
         </div>

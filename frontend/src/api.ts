@@ -6,6 +6,7 @@ import type {
   ScenarioRun,
   ScenarioSummary,
   ScoredTransaction,
+  StoryEvent,
 } from './types'
 
 // All calls are relative: Vite proxies /api to the backend in dev.
@@ -47,6 +48,8 @@ export interface StreamHandlers {
   /** The backend rebuilt its state. Flush the feed before the replay arrives. */
   onReset?: () => void
   onScenario?: (info: { scenario_id: string; title: string; blurb: string }) => void
+  /** A stage of a paced attack replay started, scored, or the replay finished. */
+  onStory?: (event: StoryEvent) => void
 }
 
 /**
@@ -85,6 +88,7 @@ export function useTransactionStream(handlers: StreamHandlers): StreamStatus {
     es.addEventListener('scenario', (e: MessageEvent<string>) =>
       parse<{ scenario_id: string; title: string; blurb: string }>(e, (v) => ref.current.onScenario?.(v)),
     )
+    es.addEventListener('story', (e: MessageEvent<string>) => parse<StoryEvent>(e, (v) => ref.current.onStory?.(v)))
     return () => es.close()
   }, [])
 
