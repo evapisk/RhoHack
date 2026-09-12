@@ -1,7 +1,25 @@
+# Secrets / local config
+.env
+backend/.env
+frontend/.env*.local
+
+# Runtime state (poller cursor etc.)
+backend/.state/
+
+# Python
 __pycache__/
 *.pyc
-.env
 .venv/
-venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
 node_modules/
+frontend/dist/
+frontend/.vite/
+
+# OS / editors
 .DS_Store
+.idea/
+.vscode/

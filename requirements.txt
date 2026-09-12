@@ -1,7 +1,0 @@
-fastapi
-uvicorn[standard]
-networkx
-httpx
-python-dotenv
-sse-starlette
-numpy

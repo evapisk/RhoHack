@@ -1,0 +1,149 @@
+{
+  "accounts": [
+    {
+      "account_name": "Cash (Checking)",
+      "account_number_last_4": "9508",
+      "account_type": "checking",
+      "balance": {
+        "amount": 876138,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000002",
+      "routing_number_last_4": "0089"
+    },
+    {
+      "account_name": "Cash (Checking)",
+      "account_number_last_4": "4609",
+      "account_type": "checking",
+      "balance": {
+        "amount": 8711697,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000003",
+      "routing_number_last_4": "0089"
+    },
+    {
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000007"
+    },
+    {
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000008"
+    },
+    {
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000009"
+    },
+    {
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000010"
+    },
+    {
+      "account_name": "Inventory Checking",
+      "account_number_last_4": "3608",
+      "account_type": "checking",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000005",
+      "routing_number_last_4": "0089"
+    },
+    {
+      "account_name": "Primary Checking",
+      "account_number_last_4": "5702",
+      "account_type": "checking",
+      "balance": {
+        "amount": 811970,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000006",
+      "routing_number_last_4": "0089"
+    },
+    {
+      "account_name": "Reserve Checking",
+      "account_number_last_4": "0106",
+      "account_type": "checking",
+      "balance": {
+        "amount": 1046,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000001",
+      "routing_number_last_4": "0089"
+    },
+    {
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000011"
+    },
+    {
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000012"
+    },
+    {
+      "account_name": "Savings",
+      "account_number_last_4": "3214",
+      "account_type": "savings",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000013",
+      "routing_number_last_4": "0089"
+    },
+    {
+      "account_name": "Savings",
+      "account_number_last_4": "2513",
+      "account_type": "savings",
+      "balance": {
+        "amount": 0,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000014",
+      "routing_number_last_4": "0089"
+    },
+    {
+      "account_name": "Treasury Checking",
+      "account_number_last_4": "7301",
+      "account_type": "checking",
+      "balance": {
+        "amount": 15460929,
+        "currency": "USD"
+      },
+      "id": "30000000-0000-4000-8000-000000000004",
+      "routing_number_last_4": "0089"
+    }
+  ],
+  "page": {
+    "next_page_token": null
+  }
+}

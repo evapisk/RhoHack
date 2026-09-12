@@ -1,0 +1,1486 @@
+{
+  "page": {
+    "next_page_token": null
+  },
+  "transactions": [
+    {
+      "account_id": "30000000-0000-4000-8000-000000000014",
+      "account_name": "Savings",
+      "account_type": "savings",
+      "amount": {
+        "amount": 257025,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho Savings",
+      "id": "018870b5-c260-7000-8000-000000000045",
+      "initiated_at": "2023-05-31T07:29:00Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000062",
+      "posted_at": "2023-05-31T07:30:00Z",
+      "status": "settled",
+      "transaction_type": "savings_interest"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000014",
+      "account_name": "Savings",
+      "account_type": "savings",
+      "amount": {
+        "amount": 130000000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Treasury Checking",
+      "id": "018880e7-4460-7000-8000-000000000046",
+      "initiated_at": "2023-06-03T10:57:00Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000063",
+      "posted_at": "2023-06-03T11:03:00Z",
+      "status": "settled",
+      "transaction_type": "savings_deposit"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000004",
+      "account_name": "Treasury Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": -4500,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho",
+      "id": "018c45b2-9e18-7000-8000-000000000044",
+      "initiated_at": "2023-12-07T19:13:03Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000061",
+      "posted_at": "2023-12-07T19:13:03Z",
+      "status": "settled",
+      "transaction_type": "adjustment_credit"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 9418,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Credit Account",
+      "id": "018e3ffc-6b78-7000-8000-000000000042",
+      "initiated_at": "2024-03-15T02:41:31Z",
+      "memo": "One day Credit refund for date: 2024-03-15 00:00:31.361435-04:00",
+      "money_movement_id": "40000000-0000-4000-8000-000000000060",
+      "note": "One day Credit refund for date: 2024-03-15 00:00:31.361435-04:00",
+      "posted_at": "2024-03-15T02:41:31Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment_refund"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -9418,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Cash (Checking)",
+      "id": "018e3ffc-6b78-7000-8000-000000000043",
+      "initiated_at": "2024-03-15T02:41:31Z",
+      "memo": "One day Credit refund for date: 2024-03-15 00:00:31.361435-04:00",
+      "money_movement_id": "40000000-0000-4000-8000-000000000060",
+      "note": "One day Credit refund for date: 2024-03-15 00:00:31.361435-04:00",
+      "posted_at": "2024-03-15T02:41:31Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment_refund"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 282512,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Credit Account",
+      "id": "018e5b39-07c0-7000-8000-000000000041",
+      "initiated_at": "2024-03-20T09:37:28Z",
+      "memo": "One day Credit refund for date: 2024-03-19 00:00:28.648131-04:00",
+      "money_movement_id": "40000000-0000-4000-8000-000000000059",
+      "note": "One day Credit refund for date: 2024-03-19 00:00:28.648131-04:00",
+      "posted_at": "2024-03-20T09:37:28Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment_refund"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -282512,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Cash (Checking)",
+      "id": "018e5b39-0ba8-7000-8000-000000000040",
+      "initiated_at": "2024-03-20T09:37:29Z",
+      "memo": "One day Credit refund for date: 2024-03-19 00:00:28.648131-04:00",
+      "money_movement_id": "40000000-0000-4000-8000-000000000059",
+      "note": "One day Credit refund for date: 2024-03-19 00:00:28.648131-04:00",
+      "posted_at": "2024-03-20T09:37:29Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment_refund"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -50000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Wellstone Media LLC",
+      "id": "0194c4d9-a328-7000-8000-00000000003f",
+      "initiated_at": "2025-02-02T04:09:45Z",
+      "memo": "[INVALID_RECEIVING_ROUTING_NUMBER] Vendor payment",
+      "money_movement_id": "40000000-0000-4000-8000-000000000058",
+      "note": "[INVALID_RECEIVING_ROUTING_NUMBER] Vendor payment, Error: Invalid receiving routing number.",
+      "posted_at": "2025-02-02T04:09:45Z",
+      "status": "failed",
+      "transaction_type": "wire_out",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000006",
+      "account_name": "Primary Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": 3000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho",
+      "id": "01951a1d-e268-7000-8000-00000000003e",
+      "initiated_at": "2025-02-18T17:32:01Z",
+      "memo": "Correction of encoding error regarding check number 100245",
+      "money_movement_id": "40000000-0000-4000-8000-000000000057",
+      "note": "Correction of encoding error regarding check number 100245",
+      "posted_at": "2025-02-18T17:32:01Z",
+      "status": "settled",
+      "transaction_type": "adjustment_debit"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000014",
+      "account_name": "Savings",
+      "account_type": "savings",
+      "amount": {
+        "amount": 225537,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho Savings",
+      "id": "0195b81d-9f80-7000-8000-00000000003d",
+      "initiated_at": "2025-03-21T09:51:44Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000056",
+      "posted_at": "2025-03-21T11:03:00Z",
+      "status": "settled",
+      "transaction_type": "savings_interest"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000006",
+      "account_name": "Primary Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": -96409,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Thomas Reed",
+      "id": "0195f17f-5db8-7000-8000-00000000003c",
+      "initiated_at": "2025-04-01T13:16:51Z",
+      "memo": "[INVALID_RECEIVING_ROUTING_NUMBER] Payroll cycle",
+      "money_movement_id": "40000000-0000-4000-8000-000000000055",
+      "note": "[INVALID_RECEIVING_ROUTING_NUMBER] Payroll cycle, Error: Invalid receiving routing number.",
+      "posted_at": "2025-04-01T13:16:51Z",
+      "status": "failed",
+      "transaction_type": "wire_out",
+      "user_full_name": "Andrew Collins",
+      "user_id": "10000000-0000-4000-8000-000000000012"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000006",
+      "account_name": "Primary Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": 100000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Brightstone Consulting LLC",
+      "id": "0197eae4-e598-7000-8000-00000000003a",
+      "initiated_at": "2025-07-08T16:35:59Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000053",
+      "posted_at": "2025-07-08T16:35:59Z",
+      "status": "failed",
+      "transaction_type": "check_deposit",
+      "user_full_name": "Grace Morgan",
+      "user_id": "10000000-0000-4000-8000-000000000011"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000006",
+      "account_name": "Primary Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": 273860,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Westbridge Polytechnic Institute",
+      "id": "0197fac9-b6c8-7000-8000-00000000003b",
+      "initiated_at": "2025-07-11T18:40:13Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000054",
+      "posted_at": "2025-07-11T18:40:13Z",
+      "status": "failed",
+      "transaction_type": "check_deposit",
+      "user_full_name": "Grace Morgan",
+      "user_id": "10000000-0000-4000-8000-000000000011"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000006",
+      "account_name": "Primary Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": 329900,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Riverside Community College",
+      "id": "0198603f-0e90-7000-8000-000000000039",
+      "initiated_at": "2025-07-31T11:30:02Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000052",
+      "posted_at": "2025-07-31T11:30:02Z",
+      "status": "failed",
+      "transaction_type": "check_deposit",
+      "user_full_name": "Grace Morgan",
+      "user_id": "10000000-0000-4000-8000-000000000011"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000013",
+      "account_name": "Savings",
+      "account_type": "savings",
+      "amount": {
+        "amount": 3000000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Cash (Checking)",
+      "id": "01991b89-1628-7000-8000-000000000038",
+      "initiated_at": "2025-09-05T20:19:53Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000051",
+      "posted_at": "2025-09-06T08:05:00Z",
+      "status": "settled",
+      "transaction_type": "savings_deposit"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000013",
+      "account_name": "Savings",
+      "account_type": "savings",
+      "amount": {
+        "amount": -1000000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Cash (Checking)",
+      "id": "01996e83-4628-7000-8000-000000000037",
+      "initiated_at": "2025-09-21T23:02:01Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000050",
+      "posted_at": "2025-09-23T14:32:21Z",
+      "status": "settled",
+      "transaction_type": "savings_withdrawal"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -18209,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rewards",
+      "id": "01999bf9-7cf8-7000-8000-000000000035",
+      "initiated_at": "2025-09-30T18:54:03Z",
+      "memo": "PAY1002456",
+      "money_movement_id": "40000000-0000-4000-8000-000000000048",
+      "note": "PAY1002456",
+      "posted_at": "2025-09-30T18:54:03Z",
+      "status": "settled",
+      "transaction_type": "ach_return"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -50582,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rewards",
+      "id": "0199a70d-d288-7000-8000-000000000036",
+      "initiated_at": "2025-10-02T22:32:05Z",
+      "memo": "PAY1001984",
+      "money_movement_id": "40000000-0000-4000-8000-000000000049",
+      "note": "PAY1001984",
+      "posted_at": "2025-10-02T22:32:05Z",
+      "status": "settled",
+      "transaction_type": "ach_return"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 9929125,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Greenfield Yard Supply",
+      "id": "0199d033-d1a8-7000-8000-000000000034",
+      "initiated_at": "2025-10-10T22:18:01Z",
+      "memo": "Inventory restock",
+      "money_movement_id": "40000000-0000-4000-8000-000000000047",
+      "note": "Inventory restock",
+      "posted_at": "2025-10-10T22:18:01Z",
+      "status": "settled",
+      "transaction_type": "wire_in"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -92500,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Foundry Works Inc.",
+      "id": "0199e9d6-4208-7000-8000-000000000033",
+      "initiated_at": "2025-10-15T21:45:57Z",
+      "memo": "SC-2509 desk mat order",
+      "money_movement_id": "40000000-0000-4000-8000-000000000046",
+      "note": "SC-2509 desk mat order",
+      "posted_at": "2025-10-16T11:41:22Z",
+      "status": "settled",
+      "transaction_type": "ach_debit",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -180000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Foundry Works Inc.",
+      "id": "019a09ad-afa8-7000-8000-000000000032",
+      "initiated_at": "2025-10-22T02:09:29Z",
+      "memo": "SC - 2509 - desk mat shipping",
+      "money_movement_id": "40000000-0000-4000-8000-000000000045",
+      "note": "SC - 2509 - desk mat shipping",
+      "posted_at": "2025-10-22T18:37:14Z",
+      "status": "settled",
+      "transaction_type": "ach_debit",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 15000000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Meridian Travel Inc.",
+      "id": "019a2fc3-a3f0-7000-8000-000000000031",
+      "initiated_at": "2025-10-29T11:39:02Z",
+      "memo": "MONEY TRANSFER",
+      "money_movement_id": "40000000-0000-4000-8000-000000000044",
+      "note": "MONEY TRANSFER",
+      "posted_at": "2025-10-29T11:39:02Z",
+      "status": "settled",
+      "transaction_type": "wire_in"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 15000000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Meridian Travel Inc.",
+      "id": "019a93ed-da30-7000-8000-000000000030",
+      "initiated_at": "2025-11-17T22:27:10Z",
+      "memo": "MONEY TRANSFER",
+      "money_movement_id": "40000000-0000-4000-8000-000000000043",
+      "note": "MONEY TRANSFER",
+      "posted_at": "2025-11-17T22:27:10Z",
+      "status": "settled",
+      "transaction_type": "wire_in"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -279000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Maison Aurelia SAC",
+      "id": "019afe96-1500-7000-8000-00000000002e",
+      "initiated_at": "2025-12-08T15:30:40Z",
+      "memo": "note: Inventory purchase closing, reason: Inventory purchase closing, ref: Inventory purchase closing",
+      "money_movement_id": "40000000-0000-4000-8000-000000000041",
+      "note": "note: Inventory purchase closing, reason: Inventory purchase closing, ref: Inventory purchase closing",
+      "posted_at": "2025-12-08T16:07:07Z",
+      "status": "settled",
+      "transaction_type": "international_wire_out",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -1500,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho",
+      "id": "019b0ecc-2ae0-7000-8000-00000000002f",
+      "initiated_at": "2025-12-11T19:03:40Z",
+      "memo": "Swift OUR fee",
+      "money_movement_id": "40000000-0000-4000-8000-000000000042",
+      "note": "Swift OUR fee",
+      "posted_at": "2025-12-11T19:03:40Z",
+      "status": "settled",
+      "transaction_type": "international_wire_fee"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -52142,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Guangzhou Harbor Apparel Co., Ltd.",
+      "id": "019c4a26-ae98-7000-8000-00000000002c",
+      "initiated_at": "2026-02-11T00:42:55Z",
+      "memo": "note: C-10001 merchandise order, reason: GOODS_AND_SERVICES, ref: C-10001 merchandise order",
+      "money_movement_id": "40000000-0000-4000-8000-000000000039",
+      "note": "note: C-10001 merchandise order, reason: GOODS_AND_SERVICES, ref: C-10001 merchandise order",
+      "posted_at": "2026-02-12T01:53:06Z",
+      "status": "settled",
+      "transaction_type": "international_wire_out",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -1500,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho",
+      "id": "019c5a0e-0838-7000-8000-00000000002d",
+      "initiated_at": "2026-02-14T02:49:55Z",
+      "memo": "Swift OUR fee",
+      "money_movement_id": "40000000-0000-4000-8000-000000000040",
+      "note": "Swift OUR fee",
+      "posted_at": "2026-02-14T02:49:55Z",
+      "status": "settled",
+      "transaction_type": "international_wire_fee"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000006",
+      "account_name": "Primary Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": -460906,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Marcus Hill",
+      "id": "019cd5dd-a270-7000-8000-00000000002b",
+      "initiated_at": "2026-03-10T03:49:58Z",
+      "memo": "Severance payment",
+      "money_movement_id": "40000000-0000-4000-8000-000000000038",
+      "note": "Severance payment",
+      "posted_at": "2026-03-10T18:37:12Z",
+      "status": "settled",
+      "transaction_type": "ach_debit",
+      "user_full_name": "Andrew Collins",
+      "user_id": "10000000-0000-4000-8000-000000000012"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -56250,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Summit Legal LLP",
+      "id": "019cef0b-f828-7000-8000-000000000029",
+      "initiated_at": "2026-03-15T01:11:05Z",
+      "memo": "Invoice 317 - consulting services",
+      "money_movement_id": "40000000-0000-4000-8000-000000000036",
+      "note": "Invoice 317 - consulting services",
+      "posted_at": "2026-03-15T16:17:14Z",
+      "status": "settled",
+      "transaction_type": "ach_debit",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -56250,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Everline Creative Studio",
+      "id": "019cfcf2-0f40-7000-8000-00000000002a",
+      "initiated_at": "2026-03-17T17:57:28Z",
+      "memo": "Invoice 317 - production hours",
+      "money_movement_id": "40000000-0000-4000-8000-000000000037",
+      "note": "Invoice 317 - production hours",
+      "posted_at": "2026-03-17T17:57:28Z",
+      "status": "failed",
+      "transaction_type": "wire_out",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -339100,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Crescent Property Group",
+      "id": "019d1987-7140-7000-8000-000000000028",
+      "initiated_at": "2026-03-23T07:10:00Z",
+      "memo": "Monthly office rent",
+      "money_movement_id": "40000000-0000-4000-8000-000000000035",
+      "note": "Monthly office rent",
+      "posted_at": "2026-04-10T12:37:53Z",
+      "status": "settled",
+      "transaction_type": "check_payment",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 94018,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rewards",
+      "id": "019d19e6-cf50-7000-8000-000000000027",
+      "initiated_at": "2026-03-23T08:54:10Z",
+      "memo": "Rewards cashback",
+      "money_movement_id": "40000000-0000-4000-8000-000000000034",
+      "note": "Rewards cashback",
+      "posted_at": "2026-03-23T08:54:10Z",
+      "status": "settled",
+      "transaction_type": "ach_credit",
+      "user_full_name": "Olivia Chen",
+      "user_id": "10000000-0000-4000-8000-000000000005"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -105000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Aaron Blake",
+      "id": "019d2634-7fa0-7000-8000-000000000026",
+      "initiated_at": "2026-03-25T18:14:28Z",
+      "memo": "Contractor hours",
+      "money_movement_id": "40000000-0000-4000-8000-000000000033",
+      "note": "Contractor hours",
+      "posted_at": "2026-03-25T20:18:13Z",
+      "status": "settled",
+      "transaction_type": "ach_debit",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000004",
+      "account_name": "Treasury Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": -5900000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Civic Affairs Inc.",
+      "id": "019d3e86-4480-7000-8000-000000000025",
+      "initiated_at": "2026-03-30T11:34:40Z",
+      "memo": "Transfer to external account",
+      "money_movement_id": "40000000-0000-4000-8000-000000000032",
+      "note": "Transfer to external account",
+      "posted_at": "2026-03-30T11:34:40Z",
+      "status": "failed",
+      "transaction_type": "wire_out",
+      "user_full_name": "Priya Shah",
+      "user_id": "10000000-0000-4000-8000-000000000010"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -1000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho",
+      "id": "019d3e86-4481-7000-8000-000000000047",
+      "initiated_at": "2026-03-30T11:35:00Z",
+      "memo": "Wire fee",
+      "money_movement_id": "40000000-0000-4000-8000-000000000064",
+      "note": "Wire fee",
+      "posted_at": "2026-03-30T11:35:00Z",
+      "status": "settled",
+      "transaction_type": "wire_fee"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -1250000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Harborline Logistics",
+      "id": "019d3e86-4482-7000-8000-000000000048",
+      "initiated_at": "2026-03-30T11:36:00Z",
+      "memo": "Q3 freight invoice",
+      "money_movement_id": "40000000-0000-4000-8000-000000000065",
+      "note": "Q3 freight invoice",
+      "status": "awaiting_approval",
+      "transaction_type": "ach_debit",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000011",
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "amount": {
+        "amount": 58255,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho Rewards",
+      "id": "019d6e98-1978-7000-8000-000000000024",
+      "initiated_at": "2026-04-08T19:35:55Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000031",
+      "posted_at": "2026-04-08T19:35:55Z",
+      "status": "settled",
+      "transaction_type": "rewards_accrual"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 58255,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rewards",
+      "id": "019d9179-7388-7000-8000-000000000023",
+      "initiated_at": "2026-04-15T14:09:09Z",
+      "memo": "Rewards cashback",
+      "money_movement_id": "40000000-0000-4000-8000-000000000030",
+      "note": "Rewards cashback",
+      "posted_at": "2026-04-15T14:09:09Z",
+      "status": "settled",
+      "transaction_type": "ach_credit",
+      "user_full_name": "Olivia Chen",
+      "user_id": "10000000-0000-4000-8000-000000000005"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000012",
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "amount": {
+        "amount": -12771,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Cash (Checking)",
+      "id": "019da298-8dc0-7000-8000-000000000022",
+      "initiated_at": "2026-04-18T21:56:40Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000029",
+      "posted_at": "2026-04-19T16:17:11Z",
+      "status": "settled",
+      "transaction_type": "rewards_cashback_redemption"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 40564,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Reserve Checking",
+      "id": "019db616-fc88-7000-8000-00000000001f",
+      "initiated_at": "2026-04-22T16:47:33Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000027",
+      "posted_at": "2026-04-22T16:47:33Z",
+      "status": "settled",
+      "transaction_type": "internal_transfer",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000001",
+      "account_name": "Reserve Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": -40564,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Cash (Checking)",
+      "id": "019db616-fc88-7000-8000-000000000020",
+      "initiated_at": "2026-04-22T16:47:33Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000027",
+      "posted_at": "2026-04-22T16:47:33Z",
+      "status": "settled",
+      "transaction_type": "internal_transfer",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 12771,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rewards",
+      "id": "019dbf63-01b0-7000-8000-000000000021",
+      "initiated_at": "2026-04-24T12:07:10Z",
+      "memo": "Rewards cashback",
+      "money_movement_id": "40000000-0000-4000-8000-000000000028",
+      "note": "Rewards cashback",
+      "posted_at": "2026-04-24T12:07:10Z",
+      "status": "settled",
+      "transaction_type": "ach_credit",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000014",
+      "account_name": "Savings",
+      "account_type": "savings",
+      "amount": {
+        "amount": -225537,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Primary Checking",
+      "id": "019dd9e8-d118-7000-8000-00000000001e",
+      "initiated_at": "2026-04-29T15:43:27Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000026",
+      "posted_at": "2026-05-07T12:23:23Z",
+      "status": "settled",
+      "transaction_type": "savings_withdrawal"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000011",
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "amount": {
+        "amount": 22739,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho Rewards",
+      "id": "019e0202-f5e8-7000-8000-00000000001d",
+      "initiated_at": "2026-05-07T10:36:49Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000025",
+      "posted_at": "2026-05-07T10:36:49Z",
+      "status": "settled",
+      "transaction_type": "rewards_accrual"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000011",
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "amount": {
+        "amount": -22739,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Cash (Checking)",
+      "id": "019e09de-6f68-7000-8000-00000000001c",
+      "initiated_at": "2026-05-08T23:13:53Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000024",
+      "posted_at": "2026-05-09T01:17:16Z",
+      "status": "settled",
+      "transaction_type": "rewards_cashback_redemption"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 22739,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rewards",
+      "id": "019e0d6d-bc60-7000-8000-00000000001b",
+      "initiated_at": "2026-05-09T15:49:16Z",
+      "memo": "Rewards cashback",
+      "money_movement_id": "40000000-0000-4000-8000-000000000023",
+      "note": "Rewards cashback",
+      "posted_at": "2026-05-09T15:49:16Z",
+      "status": "settled",
+      "transaction_type": "ach_credit",
+      "user_full_name": "Olivia Chen",
+      "user_id": "10000000-0000-4000-8000-000000000005"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 10000000,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Meridian Travel Inc.",
+      "id": "019e3868-5858-7000-8000-00000000001a",
+      "initiated_at": "2026-05-18T00:07:03Z",
+      "memo": "MONEY TRANSFER",
+      "money_movement_id": "40000000-0000-4000-8000-000000000022",
+      "note": "MONEY TRANSFER",
+      "posted_at": "2026-05-18T00:07:03Z",
+      "status": "settled",
+      "transaction_type": "wire_in"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -123987,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Reserve Checking",
+      "id": "019e9516-3890-7000-8000-000000000018",
+      "initiated_at": "2026-06-05T00:02:02Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000021",
+      "posted_at": "2026-06-05T00:02:02Z",
+      "status": "settled",
+      "transaction_type": "internal_transfer",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000001",
+      "account_name": "Reserve Checking",
+      "account_type": "checking",
+      "amount": {
+        "amount": 123987,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Cash (Checking)",
+      "id": "019e9516-3890-7000-8000-000000000019",
+      "initiated_at": "2026-06-05T00:02:02Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000021",
+      "posted_at": "2026-06-05T00:02:02Z",
+      "status": "settled",
+      "transaction_type": "internal_transfer",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000012",
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "amount": {
+        "amount": 764,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho Rewards",
+      "id": "019ea667-0958-7000-8000-000000000017",
+      "initiated_at": "2026-06-08T08:43:51Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000020",
+      "posted_at": "2026-06-08T08:43:51Z",
+      "status": "settled",
+      "transaction_type": "rewards_accrual"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000011",
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "amount": {
+        "amount": 108403,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Rho Rewards",
+      "id": "019eb1d3-6de0-7000-8000-000000000016",
+      "initiated_at": "2026-06-10T13:58:04Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000019",
+      "posted_at": "2026-06-10T13:58:04Z",
+      "status": "settled",
+      "transaction_type": "rewards_accrual"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": 1159,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "card_id": "20000000-0000-4000-8000-000000000008",
+      "card_name": "Claire Mitchell",
+      "counterparty_name": "Canal House Bistro Amsterdam",
+      "id": "019eb7cd-5df0-7000-8000-000000000015",
+      "initiated_at": "2026-06-11T17:49:10Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000018",
+      "posted_at": "2026-06-11T17:49:10Z",
+      "status": "settled",
+      "transaction_type": "card_refund",
+      "user_full_name": "Claire Mitchell",
+      "user_id": "10000000-0000-4000-8000-000000000009"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": 3475,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "card_id": "20000000-0000-4000-8000-000000000008",
+      "card_name": "Claire Mitchell",
+      "counterparty_name": "Night Kitchen Amsterdam",
+      "id": "019ebe70-e410-7000-8000-000000000014",
+      "initiated_at": "2026-06-13T00:45:30Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000017",
+      "posted_at": "2026-06-13T00:45:30Z",
+      "status": "settled",
+      "transaction_type": "card_refund",
+      "user_full_name": "Claire Mitchell",
+      "user_id": "10000000-0000-4000-8000-000000000009"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": 39109,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "card_id": "20000000-0000-4000-8000-000000000008",
+      "card_name": "Claire Mitchell",
+      "counterparty_name": "Bowline Journeys Amsterdam",
+      "id": "019ec6bd-3830-7000-8000-000000000013",
+      "initiated_at": "2026-06-14T15:25:50Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000016",
+      "posted_at": "2026-06-14T15:25:50Z",
+      "status": "settled",
+      "transaction_type": "card_refund",
+      "user_full_name": "Claire Mitchell",
+      "user_id": "10000000-0000-4000-8000-000000000009"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -339100,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "counterparty_name": "Crescent Property Group",
+      "id": "019eda73-2218-7000-8000-000000000012",
+      "initiated_at": "2026-06-18T11:17:19Z",
+      "memo": "Monthly office rent",
+      "money_movement_id": "40000000-0000-4000-8000-000000000015",
+      "note": "Monthly office rent",
+      "posted_at": "2026-06-18T11:17:19Z",
+      "status": "failed",
+      "transaction_type": "check_payment",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": 108403,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "8c284ea9-bbcb-4d71-8074-0f6fb93d224d",
+          "file_name": "rewards-cashback-notice.pdf"
+        }
+      ],
+      "counterparty_name": "Rewards",
+      "id": "019eebb0-0938-7000-8000-00000000000b",
+      "initiated_at": "2026-06-21T19:37:23Z",
+      "memo": "Rewards cashback",
+      "money_movement_id": "40000000-0000-4000-8000-000000000008",
+      "note": "Rewards cashback",
+      "posted_at": "2026-06-21T19:37:23Z",
+      "status": "settled",
+      "transaction_type": "ach_credit",
+      "user_full_name": "Olivia Chen",
+      "user_id": "10000000-0000-4000-8000-000000000005"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -1850,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "11afe478-b02d-4d88-a774-1e85b434eeee",
+          "file_name": "cloudbridge-invoice.pdf"
+        }
+      ],
+      "card_id": "20000000-0000-4000-8000-000000000001",
+      "card_name": "Ethan Parker",
+      "counterparty_name": "Cloudbridge Services LLC",
+      "id": "019eef63-be80-7000-8000-00000000000e",
+      "initiated_at": "2026-06-22T12:52:32Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000011",
+      "posted_at": "2026-06-23T18:46:25Z",
+      "status": "settled",
+      "transaction_type": "card_debit",
+      "user_full_name": "Ethan Parker",
+      "user_id": "10000000-0000-4000-8000-000000000001"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -121827,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "card_id": "20000000-0000-4000-8000-000000000007",
+      "card_name": "Emma Walsh Virtual Card",
+      "counterparty_name": "City Photo Tours London",
+      "id": "019ef01b-a0b8-7000-8000-000000000010",
+      "initiated_at": "2026-06-22T16:13:23Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000013",
+      "posted_at": "2026-06-23T14:38:41Z",
+      "status": "settled",
+      "transaction_type": "card_debit",
+      "user_full_name": "Emma Walsh",
+      "user_id": "10000000-0000-4000-8000-000000000008"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -4947,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "5557f9f5-74ea-4d12-9fb8-e6483f17c08c",
+          "file_name": "office-supply-receipt.pdf"
+        }
+      ],
+      "card_id": "20000000-0000-4000-8000-000000000001",
+      "card_name": "Ethan Parker",
+      "counterparty_name": "Northstar Office Supply",
+      "id": "019ef37e-4418-7000-8000-000000000001",
+      "initiated_at": "2026-06-23T07:59:59Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000001",
+      "posted_at": "2026-06-23T07:59:59Z",
+      "status": "pending",
+      "transaction_type": "card_debit",
+      "user_full_name": "Ethan Parker",
+      "user_id": "10000000-0000-4000-8000-000000000001"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -45000,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "af1456af-1428-4845-8b03-9c98e098ec18",
+          "file_name": "car-service-receipt.pdf"
+        },
+        {
+          "file_id": "104c1de5-dcd3-429d-933e-d61fd076a55c",
+          "file_name": "car-service-itinerary.pdf"
+        }
+      ],
+      "card_id": "20000000-0000-4000-8000-000000000002",
+      "card_name": "Maya Thompson",
+      "counterparty_name": "Graceway Car Service",
+      "id": "019ef508-2808-7000-8000-000000000006",
+      "initiated_at": "2026-06-23T15:10:13Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000004",
+      "posted_at": "2026-06-23T15:10:13Z",
+      "status": "pending",
+      "transaction_type": "card_debit",
+      "user_full_name": "Maya Thompson",
+      "user_id": "10000000-0000-4000-8000-000000000002"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": 228073,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "card_id": "20000000-0000-4000-8000-000000000008",
+      "card_name": "Claire Mitchell",
+      "counterparty_name": "Zurich Airport Services",
+      "id": "019ef5af-1280-7000-8000-000000000011",
+      "initiated_at": "2026-06-23T18:12:32Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000014",
+      "posted_at": "2026-06-23T18:12:32Z",
+      "status": "settled",
+      "transaction_type": "card_refund",
+      "user_full_name": "Claire Mitchell",
+      "user_id": "10000000-0000-4000-8000-000000000009"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000011",
+      "account_name": "Rewards",
+      "account_type": "rewards",
+      "amount": {
+        "amount": -108403,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "6c086ad1-67c5-408e-b2c7-7766178b2211",
+          "file_name": "rewards-redemption-confirmation.pdf"
+        }
+      ],
+      "counterparty_name": "Cash (Checking)",
+      "id": "019ef608-ea80-7000-8000-00000000000d",
+      "initiated_at": "2026-06-23T19:50:40Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000010",
+      "posted_at": "2026-06-23T21:57:23Z",
+      "status": "settled",
+      "transaction_type": "rewards_cashback_redemption"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -144827,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "8191a1bf-5585-45a4-8950-381e71835547",
+          "file_name": "credit-repayment-statement.pdf"
+        }
+      ],
+      "counterparty_name": "Credit Account",
+      "id": "019ef6d6-73b0-7000-8000-000000000008",
+      "initiated_at": "2026-06-23T23:35:10Z",
+      "memo": "Daily credit repayment for date 2026/06/23",
+      "money_movement_id": "40000000-0000-4000-8000-000000000006",
+      "note": "Daily credit repayment for date 2026/06/23",
+      "posted_at": "2026-06-23T23:35:10Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": 144827,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "cdc328c1-c3a3-4670-a371-28e34891ee68",
+          "file_name": "credit-repayment-receipt.pdf"
+        }
+      ],
+      "counterparty_name": "Cash (Checking)",
+      "id": "019ef6d6-73b0-7000-8000-000000000009",
+      "initiated_at": "2026-06-23T23:35:10Z",
+      "memo": "Daily credit repayment for date 2026/06/23",
+      "money_movement_id": "40000000-0000-4000-8000-000000000006",
+      "note": "Daily credit repayment for date 2026/06/23",
+      "posted_at": "2026-06-23T23:35:10Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -5331,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "1b6d9736-a62c-48ab-972c-804fb4a7210f",
+          "file_name": "office-supply-invoice.pdf"
+        }
+      ],
+      "card_id": "20000000-0000-4000-8000-000000000005",
+      "card_name": "Sofia Martin Physical Card",
+      "counterparty_name": "Northstar Office Supply",
+      "id": "019ef993-93f8-7000-8000-00000000000c",
+      "initiated_at": "2026-06-24T12:20:59Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000009",
+      "posted_at": "2026-06-25T16:11:17Z",
+      "status": "settled",
+      "transaction_type": "card_debit",
+      "user_full_name": "Sofia Martin",
+      "user_id": "10000000-0000-4000-8000-000000000006"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -1622132,
+        "currency": "USD"
+      },
+      "attachments": [],
+      "card_id": "20000000-0000-4000-8000-000000000006",
+      "card_name": "Hannah Brooks",
+      "counterparty_name": "Island Resort Maldives",
+      "id": "019efcd5-97c8-7000-8000-00000000000f",
+      "initiated_at": "2026-06-25T03:31:57Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000012",
+      "posted_at": "2026-06-26T20:51:52Z",
+      "status": "settled",
+      "transaction_type": "card_debit",
+      "user_full_name": "Hannah Brooks",
+      "user_id": "10000000-0000-4000-8000-000000000007"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000003",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -1658253,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "3f33ab1e-8bb7-4d9e-baf3-633da9e49fd9",
+          "file_name": "checking-repayment-confirmation.pdf"
+        }
+      ],
+      "counterparty_name": "Credit Account",
+      "id": "019efe24-c478-7000-8000-000000000005",
+      "initiated_at": "2026-06-25T09:38:03Z",
+      "memo": "Daily credit repayment for date 2026/06/24",
+      "money_movement_id": "40000000-0000-4000-8000-000000000003",
+      "note": "Daily credit repayment for date 2026/06/24",
+      "posted_at": "2026-06-25T09:38:04Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": 1658253,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "5abcd54c-9726-412c-a315-500b007a6263",
+          "file_name": "credit-repayment-summary.pdf"
+        }
+      ],
+      "counterparty_name": "Cash (Checking)",
+      "id": "019efe24-c860-7000-8000-000000000004",
+      "initiated_at": "2026-06-25T09:38:04Z",
+      "memo": "Daily credit repayment for date 2026/06/24",
+      "money_movement_id": "40000000-0000-4000-8000-000000000003",
+      "note": "Daily credit repayment for date 2026/06/24",
+      "posted_at": "2026-06-25T09:38:04Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000002",
+      "account_name": "Cash (Checking)",
+      "account_type": "checking",
+      "amount": {
+        "amount": -1750,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "cdc328c1-c3a3-4670-a371-28e34891ee68",
+          "file_name": "credit-repayment-receipt.pdf"
+        }
+      ],
+      "counterparty_name": "Credit Account",
+      "id": "019f0143-3ea0-7000-8000-000000000002",
+      "initiated_at": "2026-06-26T00:10:12Z",
+      "memo": "Daily credit repayment for date 2026/06/24",
+      "money_movement_id": "40000000-0000-4000-8000-000000000002",
+      "note": "Daily credit repayment for date 2026/06/24",
+      "posted_at": "2026-06-26T00:10:12Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000007",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": 1750,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "7de7495f-e0d3-4ada-a79d-6074e745dc33",
+          "file_name": "repayment-confirmation.pdf"
+        },
+        {
+          "file_id": "602581d9-13e9-4aaa-a227-55645354bdf8",
+          "file_name": "repayment-details.csv"
+        }
+      ],
+      "counterparty_name": "Cash (Checking)",
+      "id": "019f0143-3ea0-7000-8000-000000000003",
+      "initiated_at": "2026-06-26T00:10:12Z",
+      "memo": "Daily credit repayment for date 2026/06/24",
+      "money_movement_id": "40000000-0000-4000-8000-000000000002",
+      "note": "Daily credit repayment for date 2026/06/24",
+      "posted_at": "2026-06-26T00:10:12Z",
+      "status": "settled",
+      "transaction_type": "credit_repayment"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000007",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -1750,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "8d073098-e509-4fe3-940b-ab22de36fe7a",
+          "file_name": "software-invoice.pdf"
+        }
+      ],
+      "card_id": "20000000-0000-4000-8000-000000000003",
+      "card_name": "Daniel Rivera",
+      "counterparty_name": "Teamline Software, Inc.",
+      "id": "019f031b-cb48-7000-8000-000000000007",
+      "initiated_at": "2026-06-26T08:46:21Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000005",
+      "posted_at": "2026-06-26T20:42:17Z",
+      "status": "settled",
+      "transaction_type": "card_debit",
+      "user_full_name": "Daniel Rivera",
+      "user_id": "10000000-0000-4000-8000-000000000003"
+    },
+    {
+      "account_id": "30000000-0000-4000-8000-000000000009",
+      "account_name": "Credit Account",
+      "account_type": "credit",
+      "amount": {
+        "amount": -6331,
+        "currency": "USD"
+      },
+      "attachments": [
+        {
+          "file_id": "2c436c0c-5d8b-4114-aa2d-8d7bd64d9b15",
+          "file_name": "parking-receipt.pdf"
+        }
+      ],
+      "card_id": "20000000-0000-4000-8000-000000000004",
+      "card_name": "Lucas Bennett",
+      "counterparty_name": "Midtown Parking Services",
+      "id": "019f0554-0bf0-7000-8000-00000000000a",
+      "initiated_at": "2026-06-26T19:07:02Z",
+      "money_movement_id": "40000000-0000-4000-8000-000000000007",
+      "posted_at": "2026-06-27T19:13:15Z",
+      "status": "settled",
+      "transaction_type": "card_debit",
+      "user_full_name": "Lucas Bennett",
+      "user_id": "10000000-0000-4000-8000-000000000004"
+    }
+  ]
+}
