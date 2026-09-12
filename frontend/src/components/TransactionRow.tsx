@@ -18,6 +18,7 @@ export function TransactionRow({ item, open, onToggle }: Props) {
     event.backfill ? 'backfill' : 'live',
     open ? 'open' : '',
     impostor ? 'impostor' : '',
+    features.is_internal_transfer ? 'internal' : '',
   ]
 
   return (

@@ -175,7 +175,17 @@ export default function App() {
           {visible.length === 0 ? (
             <p className="empty muted">No transactions yet. Press one of the buttons above to run a scenario.</p>
           ) : (
-            <ul>
+            <>
+              <div className="feed-head cap">
+                <span>Time</span>
+                <span>Counterparty</span>
+                <span>Account</span>
+                <span className="right">Amount</span>
+                <span>Status</span>
+                <span>Anomaly</span>
+                <span />
+              </div>
+              <ul>
               {visible.map((item) => {
                 const key = rowKey(item)
                 return (
@@ -186,8 +196,9 @@ export default function App() {
                     onToggle={() => setSelectedKey((cur) => (cur === key ? null : key))}
                   />
                 )
-              })}
-            </ul>
+                })}
+              </ul>
+            </>
           )}
         </section>
         <GraphView highlight={highlight} refreshKey={graphKey} />
