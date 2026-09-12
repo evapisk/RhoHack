@@ -49,7 +49,7 @@ The important ones:
 |---|---|
 | The sandbox feed is **static**: exactly 72 transactions dated 2023-05-31 → 2026-06-26, identical on every call, and every endpoint is GET-only. | Nothing new will ever arrive by polling. The pitch demo ("trigger a transaction, watch it get flagged") runs through `POST /api/demo/inject`, which feeds the exact same pipeline. |
 | `GET /transactions` is newest-first and paginates with `page_size` (1–100) + opaque `page_token`; the next cursor is `page.next_page_token`. | Cursor tracking is a client-side watermark (`backend/.state/cursor.json`: seen ids + last status), not the page token. |
-| Filters that work: `status`, `transaction_type`, `posted_after`, `initiated_after` (undocumented), `sort_by=initiated_at&order=asc`. Unknown params are silently ignored. | Backfill walks oldest → newest with `order=asc`. `initiated_after=<high water>` is the obvious hardening step to shrink each poll. |
+| Filters that work: `status`, `transaction_type`, `posted_after`, `initiated_after` (undocumented), `sort_by=initiated_at&order=asc`. Unknown params are silently ignored. | Backfill walks oldest → newest with `order=asc`. Steady-state ticks now also filter on `initiated_after=<high water>` (see "Poller" below). |
 | `posted_at` is null while `pending` / `awaiting_approval`; status later moves to `settled` or `failed`. | The cursor keys on `(id, status)`, so a status change surfaces as an `updated` event and is re-scored without re-inserting into the graph. |
 | There is **no counterparty id**, only `counterparty_name`. Internal transfers name the other account ("Cash (Checking)"). | Vendor nodes key on a normalized name. |
 | Amounts are signed minor units, heavy-tailed ($7 → $1.3M). | Z-scores run on `log1p(|amount|)`. |
@@ -99,6 +99,24 @@ receiving an unusually large amount is an alert. The std used in any z-score is 
 
 `scoring/autoencoder.py` is a stub with the same interface, a `featurize()` vector, and TODOs describing the training plan.
 
+## Poller: incremental ticks + settlement sweep
+
+After the initial backfill sets a high-water mark, steady-state ticks pass
+`initiated_after=<high water>&sort_by=initiated_at&order=asc` so Rho only returns rows
+genuinely newer than the last one we've recorded, instead of re-fetching and
+re-classifying the whole newest page on every 5s tick. Verified against the real sandbox:
+each incremental tick now fires exactly one request that comes back empty when nothing's
+changed, versus walking the newest page(s) every time before.
+
+The tradeoff: `initiated_after` is a strict `>`, so a status change on a transaction
+older than the mark (e.g. pending → settled) is invisible to the incremental tick.
+`Poller.sweep_pending()` covers that separately — every `PENDING_SWEEP_EVERY_N_TICKS`
+ticks (default 6), it re-checks every transaction still recorded as `pending` /
+`awaiting_approval` by id (`GET /transactions/{id}`), bounded by however many are
+actually in flight rather than by total history. Confirmed the sandbox currently has
+real `pending`/`awaiting_approval` rows and that `get_transaction` round-trips against
+them correctly.
+
 ## Repo layout
 
 ```
@@ -136,7 +154,7 @@ Merge point (hours 7–9): scoring output into the SSE feed. Already wired end t
 
 - Autoencoder: implement `fit()` / `score()` in `scoring/autoencoder.py`, train on the backfill rows.
 - Force-directed graph visualization in `GraphView.tsx` (data is already served by `/api/graph`).
-- Poller hardening: `initiated_after=<high water>` per tick, a periodic `status=pending` sweep to catch settlements, metrics.
+- Poller metrics (requests/min, sweep hit rate) — the `initiated_after` incremental tick and the `sweep_pending` settlement sweep are both done (see "Poller" above).
 - Optional LLM-generated one-line explanation per alert (narrates `AnomalyScore.reasons` into plain English for the demo UI — needs an LLM API key, only worth doing if hours 9–13 have slack).
 - WebSocket variant of the broadcaster if bidirectional needs appear.
 - Scale story for the pitch: one polling worker per company, Kafka-style stream ingestion beyond polling, graph sharded per company and pruned of aged-out low-risk nodes.
