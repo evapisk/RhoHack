@@ -18,6 +18,11 @@ __pycache__/
 node_modules/
 frontend/dist/
 frontend/.vite/
+frontend/*.tsbuildinfo
+# This project uses pnpm (pnpm-lock.yaml) exclusively; don't let a stray `npm install`
+# check in a competing lockfile.
+package-lock.json
+frontend/package-lock.json
 
 # OS / editors
 .DS_Store

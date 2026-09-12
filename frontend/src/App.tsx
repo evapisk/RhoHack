@@ -105,7 +105,7 @@ export default function App() {
             </ul>
           )}
         </section>
-        <GraphView />
+        <GraphView transactions={rows} />
       </main>
     </div>
   )
