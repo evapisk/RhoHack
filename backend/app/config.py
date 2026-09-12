@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     warn_threshold: float = 0.5
     alert_threshold: float = 0.75
 
+    # Vendor verification (Tavily). Empty key = no web lookups; scoring is unchanged.
+    tavily_api_key: str = ""
+    vendor_lookup_timeout_seconds: float = Field(default=3.0, gt=0)
+
     # Demo helpers
     demo_offline: bool = False  # force fixture mode, to rehearse the no-wifi path
     demo_replay: bool = False

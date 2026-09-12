@@ -38,6 +38,7 @@ from app.poller.simulator import InjectRequest, ReplaySource, make_injected_tran
 from app.realtime.broadcaster import SSEBroadcaster
 from app.rho_client import RhoClient, RhoError
 from app.scoring import build_scorer
+from app.scoring.vendor_lookup import VendorVerifier
 
 log = logging.getLogger("app")
 
@@ -53,7 +54,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     graph = TransactionGraph()
     scorer = build_scorer(settings)
     broadcaster = SSEBroadcaster()
-    pipeline = Pipeline(graph, scorer, bus)
+    # Tavily enrichment is optional: without a key the pipeline scores exactly as before.
+    verifier = (
+        VendorVerifier(settings.tavily_api_key, timeout=settings.vendor_lookup_timeout_seconds)
+        if settings.tavily_api_key.strip()
+        else None
+    )
+    log.info("vendor verification (Tavily): %s", "on" if verifier else "off (no TAVILY_API_KEY)")
+    pipeline = Pipeline(graph, scorer, bus, verifier=verifier)
     bus.subscribe(TOPIC_TRANSACTIONS_SCORED, broadcaster.publish)
 
     @asynccontextmanager
@@ -97,6 +105,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 t.cancel()
             await asyncio.gather(*tasks, return_exceptions=True)
             await client.aclose()
+            if verifier is not None:
+                await verifier.aclose()
 
     app = FastAPI(title="Rho Transaction Graph", version="0.1.0", lifespan=lifespan)
     app.add_middleware(

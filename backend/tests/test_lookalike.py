@@ -58,16 +58,19 @@ def test_impostor_names_are_matched_to_the_real_vendor(fixture_graph, real, impo
 
 
 def test_no_false_positives_across_every_real_vendor_pair(fixture_graph):
-    """Each genuine vendor, queried as if new, must not match a different genuine vendor."""
+    """Each genuine vendor, queried as if new, must not match a different genuine vendor.
+
+    Its own key is excluded. Querying with exclude_key=None let every vendor match itself
+    at ratio 1.0, which always outranked a real collision, so the test could not fail.
+    """
     index = fixture_graph.lookalike
-    names = [d["display_name"] for _, d in fixture_graph.g.nodes(data=True) if d.get("kind") == "counterparty"]
-    assert len(names) == 31
+    vendors = [(d["key"], d["display_name"]) for _, d in fixture_graph.g.nodes(data=True) if d.get("kind") == "counterparty"]
+    assert len(vendors) == 31  # 31 * 30 / 2 = 465 pairs
 
     false_positives = []
-    for name in names:
-        # exclude_key=None means the vendor can match itself; we only care about others
-        match = index.best_match(name, exclude_key=None)
-        if match is not None and match.display_name != name:
+    for key, name in vendors:
+        match = index.best_match(name, exclude_key=key)
+        if match is not None:
             false_positives.append((name, match.display_name, round(match.ratio, 3)))
     assert false_positives == []
 

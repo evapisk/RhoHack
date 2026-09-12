@@ -8,6 +8,15 @@ import type { Health, ScenarioRun, ScoredTransaction } from './types'
 
 const MAX_ROWS = 500
 const rowKey = (s: ScoredTransaction) => `${s.event.transaction.id}:${s.event.transaction.status}`
+const GRAPH_PREF_KEY = 'rho.showGraph'
+// Storage can throw (private window, blocked site data); the graph just defaults on.
+const readShowGraph = () => {
+  try {
+    return localStorage.getItem(GRAPH_PREF_KEY) !== '0'
+  } catch {
+    return true
+  }
+}
 const byNewest = (a: ScoredTransaction, b: ScoredTransaction) =>
   a.scored_at < b.scored_at ? 1 : a.scored_at > b.scored_at ? -1 : 0
 
@@ -20,6 +29,7 @@ export default function App() {
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [graphKey, setGraphKey] = useState(0)
   const [projector, setProjector] = useState(false)
+  const [showGraph, setShowGraph] = useState(readShowGraph)
 
   const upsert = useCallback((incoming: ScoredTransaction[]) => {
     setRows((prev) => {
@@ -73,6 +83,14 @@ export default function App() {
     document.body.classList.toggle('projector', projector)
   }, [projector])
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(GRAPH_PREF_KEY, showGraph ? '1' : '0')
+    } catch {
+      // not persisted; the toggle still works for this session
+    }
+  }, [showGraph])
+
   const handlers = useMemo(
     () => ({
       onTransaction: (s: ScoredTransaction) => {
@@ -107,6 +125,18 @@ export default function App() {
       else if (r.anomaly.level === 'warn') warns++
     }
     return { total: rows.length, live, alerts, warns }
+  }, [rows])
+
+  // Only live alerts pulse. The fixture's own historical alerts would ring from page
+  // load and teach the audience to ignore the effect before the demo starts.
+  const alertNodeIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const r of rows) {
+      if (!r.event.backfill && r.anomaly.level === 'alert' && r.features.counterparty_node_id) {
+        ids.add(r.features.counterparty_node_id)
+      }
+    }
+    return ids
   }, [rows])
 
   const selected = useMemo(
@@ -163,6 +193,9 @@ export default function App() {
             <input type="checkbox" checked={onlyFlagged} onChange={(e) => setOnlyFlagged(e.target.checked)} /> flagged
             only
           </label>
+          <label>
+            <input type="checkbox" checked={showGraph} onChange={(e) => setShowGraph(e.target.checked)} /> graph
+          </label>
         </div>
       </header>
 
@@ -170,7 +203,7 @@ export default function App() {
 
       {error && <div className="banner error">{error}</div>}
 
-      <main>
+      <main className={showGraph ? undefined : 'no-graph'}>
         <section className="feed">
           {visible.length === 0 ? (
             <p className="empty muted">No transactions yet. Press one of the buttons above to run a scenario.</p>
@@ -201,7 +234,7 @@ export default function App() {
             </>
           )}
         </section>
-        <GraphView highlight={highlight} refreshKey={graphKey} />
+        {showGraph && <GraphView highlight={highlight} refreshKey={graphKey} alertNodeIds={alertNodeIds} />}
       </main>
     </div>
   )

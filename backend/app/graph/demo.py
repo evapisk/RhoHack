@@ -9,17 +9,23 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import Any
 
 from app.graph.graph import TransactionGraph
-from app.models import Transaction
+from app.models import AnomalyScore, GraphFeatures, Transaction
 from app.poller.simulator import load_fixture_accounts, load_fixture_transactions
 from app.scoring.zscore import ZScoreScorer
 
+Scored = tuple[Transaction, GraphFeatures, AnomalyScore]
 
-def main(argv: list[str] | None = None) -> None:
-    argv = argv if argv is not None else sys.argv[1:]
-    fixtures_dir = Path(argv[0]) if argv else Path("fixtures")
 
+def replay_fixture(fixtures_dir: Path) -> tuple[TransactionGraph, list[dict[str, Any]], list[dict[str, Any]], list[Scored]]:
+    """Apply and score every fixture row in order.
+
+    Unlike seed_from_fixture this does not index money movements first, so sibling legs
+    only resolve by name. That is why this path counts 15 warn / 3 alert while the app
+    counts 14 / 4; tests/test_baseline.py pins both.
+    """
     rows = load_fixture_transactions(fixtures_dir)
     accounts = load_fixture_accounts(fixtures_dir)
 
@@ -27,13 +33,27 @@ def main(argv: list[str] | None = None) -> None:
     graph.seed_accounts(accounts)
     scorer = ZScoreScorer()
 
-    scored = []
-    new_counterparties = 0
+    scored: list[Scored] = []
     for row in rows:
         tx = Transaction.from_rho(row)
         features = graph.apply(tx)
-        new_counterparties += features.is_new_counterparty
         scored.append((tx, features, scorer.score(tx, features)))
+    return graph, rows, accounts, scored
+
+
+def level_counts(scored: list[Scored]) -> dict[str, int]:
+    levels = {"normal": 0, "warn": 0, "alert": 0}
+    for _, _, a in scored:
+        levels[a.level] += 1
+    return levels
+
+
+def main(argv: list[str] | None = None) -> None:
+    argv = argv if argv is not None else sys.argv[1:]
+    fixtures_dir = Path(argv[0]) if argv else Path("fixtures")
+
+    graph, rows, accounts, scored = replay_fixture(fixtures_dir)
+    new_counterparties = sum(f.is_new_counterparty for _, f, _ in scored)
 
     stats = graph.stats()
     print(f"fixture rows      : {len(rows)}  ({rows[0]['initiated_at']} -> {rows[-1]['initiated_at']})")

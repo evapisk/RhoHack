@@ -157,6 +157,7 @@ main {
   gap: 14px; margin-top: 14px;
 }
 @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+main.no-graph { grid-template-columns: minmax(0, 1fr); }
 
 /* The feed is a container so row breakpoints measure the COLUMN, not the window.
    The old @media (max-width: 1100px) never fired at 1280x720, which is exactly
@@ -365,6 +366,30 @@ body.projector .node-label { font-size: 13px; }
 .edge-label {
   fill: var(--alert); font-family: var(--mono); font-size: 10.5px; font-weight: 600; paint-order: stroke;
   stroke: var(--sunk); stroke-width: 3px; stroke-linejoin: round;
+}
+
+/* A vendor that just arrived grows in; a node behind a live alert rings until reset.
+   Both animate child shapes, never the node's <g>, whose transform is its position. */
+.graph-canvas .node.entering > rect,
+.graph-canvas .node.entering > circle {
+  transform-box: fill-box; transform-origin: center;
+  animation: node-enter .6s cubic-bezier(.2, .8, .2, 1) both;
+}
+.graph-canvas .node.entering > .node-label { animation: node-label-in .6s ease-out both; }
+@keyframes node-enter { from { transform: scale(0); opacity: 0; } 60% { transform: scale(1.25); opacity: 1; } to { transform: scale(1); } }
+@keyframes node-label-in { from { opacity: 0; } }
+.graph-canvas.has-focus .node.pulse { opacity: 1; }
+.graph-canvas .node.pulse circle.pulse-ring {
+  fill: none; stroke: var(--alert); stroke-width: 2; pointer-events: none;
+  transform-box: fill-box; transform-origin: center;
+  animation: node-pulse 1.6s ease-out infinite;
+}
+@keyframes node-pulse { from { transform: scale(1); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .graph-canvas .node.entering > rect,
+  .graph-canvas .node.entering > circle,
+  .graph-canvas .node.entering > .node-label { animation: none; }
+  .graph-canvas .node.pulse circle.pulse-ring { animation: none; transform: scale(1.7); opacity: .7; }
 }
 
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 0; }
