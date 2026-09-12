@@ -13,10 +13,16 @@ export interface GraphHighlight {
 interface Props {
   layout: PositionedGraph
   highlight: GraphHighlight | null
+  /** Nodes that just appeared; CSS grows them in. */
+  entering?: Set<string>
+  /** Nodes with a live alert; they ring until the feed resets. */
+  alertNodeIds?: Set<string>
 }
 
+const NONE: Set<string> = new Set()
+
 /** Pure renderer. Positions come from layoutGraph; nothing here fetches or simulates. */
-export function GraphCanvas({ layout, highlight }: Props) {
+export function GraphCanvas({ layout, highlight, entering = NONE, alertNodeIds = NONE }: Props) {
   const focus = new Set(
     [highlight?.accountNodeId, highlight?.counterpartyNodeId, highlight?.lookalikeNodeId].filter(
       (v): v is string => Boolean(v),
@@ -111,9 +117,14 @@ export function GraphCanvas({ layout, highlight }: Props) {
             focused ? 'focused' : '',
             focused && n.id === highlight?.counterpartyNodeId ? level : '',
             n.id === highlight?.lookalikeNodeId ? 'impersonated' : '',
+            entering.has(n.id) ? 'entering' : '',
+            alertNodeIds.has(n.id) ? 'pulse' : '',
           ]
           return (
             <g key={n.id} className={classes.join(' ')} transform={`translate(${n.x} ${n.y})`}>
+              {/* A separate element, drawn under the node: a CSS transform on the <g> itself
+                  would replace its translate() and throw the node to the corner. */}
+              {alertNodeIds.has(n.id) && <circle className="pulse-ring" r={n.r} />}
               {n.kind === 'account' ? (
                 <rect x={-n.r} y={-n.r * 0.72} width={n.r * 2} height={n.r * 1.44} rx={4} />
               ) : (

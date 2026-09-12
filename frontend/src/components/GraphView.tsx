@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { fetchGraph } from '../api'
 import { layoutGraph, topologySignature, type ExtraLink } from '../graph/layout'
+import { useTweenedLayout } from '../graph/useTweenedLayout'
 import type { GraphPayload } from '../types'
 import { GraphCanvas, type GraphHighlight } from './GraphCanvas'
 
@@ -11,9 +12,11 @@ interface Props {
   highlight: GraphHighlight | null
   /** Bumped by App whenever the backend state changed, so the graph refetches. */
   refreshKey: number
+  /** Graph nodes behind live alerts, so they pulse. */
+  alertNodeIds: Set<string>
 }
 
-export function GraphView({ highlight, refreshKey }: Props) {
+export function GraphView({ highlight, refreshKey, alertNodeIds }: Props) {
   const [graph, setGraph] = useState<GraphPayload | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -50,6 +53,7 @@ export function GraphView({ highlight, refreshKey }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [signature],
   )
+  const tweened = useTweenedLayout(layout)
 
   return (
     <aside className="graph-panel">
@@ -63,8 +67,13 @@ export function GraphView({ highlight, refreshKey }: Props) {
 
       {error && <p className="error">{error}</p>}
 
-      {layout ? (
-        <GraphCanvas layout={layout} highlight={highlight} />
+      {tweened.graph ? (
+        <GraphCanvas
+          layout={tweened.graph}
+          highlight={highlight}
+          entering={tweened.entering}
+          alertNodeIds={alertNodeIds}
+        />
       ) : (
         <p className="muted">Loading graph…</p>
       )}
