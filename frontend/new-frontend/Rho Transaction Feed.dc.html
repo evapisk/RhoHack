@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #f7f6f1; color: #17191b; font-family: "Instrument Sans", "Helvetica Neue", Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: #1e6b4e; text-decoration: none; }
+a:hover { color: #14503a; }
+@keyframes alertIn { 0% { opacity: 0; transform: translateY(-10px); } 30% { opacity: 1; transform: translateY(0); } 45% { box-shadow: 0 0 0 4px rgba(194,58,43,.25); } 100% { box-shadow: 0 0 0 0 rgba(194,58,43,0); } }
+@keyframes livePulse { 50% { opacity: .35; } }
+@keyframes nodeIn { from { opacity: 0; } }
+</style>
+</helmet>
+<div style="height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
+
+  <header style="flex: none; display: flex; align-items: center; gap: 20px; padding: 12px 20px; background: #ffffff; border-bottom: 1px solid #e2dfd6;">
+    <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+      <div style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap;">Rho Transaction Graph</div>
+      <div style="display: inline-flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: {{ connColor }};">
+        <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ connColor }}; animation: {{ connAnim }};"></span>{{ connLabel }}
+      </div>
+    </div>
+    <div style="display: flex; gap: 22px; margin-left: 8px;">
+      <div style="display: flex; align-items: baseline; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums;">{{ totalCount }}</span><span style="font-size: 12px; color: #6b6f66;">processed</span></div>
+      <div style="display: flex; align-items: baseline; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums;">72</span><span style="font-size: 12px; color: #6b6f66;">backfilled</span></div>
+      <div style="display: flex; align-items: baseline; gap: 6px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; color: {{ alertCountColor }};">{{ alertCount }}</span><span style="font-size: 12px; color: #6b6f66;">alerts</span></div>
+    </div>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 14px;">
+      <button onClick="{{ toggleFlagged }}" style="display: inline-flex; align-items: center; gap: 7px; background: none; border: none; padding: 6px 2px; cursor: pointer; font-family: 'Instrument Sans', sans-serif; font-size: 13px; color: #43473f;">
+        <span style="width: 26px; height: 15px; border-radius: 8px; background: {{ flagTrackBg }}; position: relative; display: inline-block; transition: background .15s;"><span style="position: absolute; top: 2px; left: {{ flagKnobLeft }}; width: 11px; height: 11px; border-radius: 50%; background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: left .15s;"></span></span>
+        Flagged only
+      </button>
+      <button onClick="{{ inject }}" style-hover="background: #14503a;" style="background: #1e6b4e; color: #ffffff; border: none; border-radius: 8px; padding: 9px 16px; font-family: 'Instrument Sans', sans-serif; font-size: 13.5px; font-weight: 600; letter-spacing: .01em; cursor: pointer; white-space: nowrap; transition: background .15s;">Trigger demo transaction</button>
+    </div>
+  </header>
+
+  <main style="flex: 1; min-height: 0; display: flex; gap: 14px; padding: 14px 20px 16px; align-items: stretch;">
+
+    <section style="flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0;">
+      <div style="flex: none; display: grid; grid-template-columns: 78px minmax(140px, 1.5fr) minmax(120px, 1.1fr) 128px 92px 118px; gap: 12px; padding: 0 16px 8px 19px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: #8a8e82;">
+        <span>Time</span><span>Counterparty</span><span>Account</span><span style="text-align: right;">Amount</span><span>Status</span><span style="text-align: right;">Anomaly</span>
+      </div>
+      <div style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-bottom: 4px;">
+        <sc-for list="{{ visibleRows }}" as="item" hint-placeholder-count="8">
+          <div onClick="{{ item.onToggle }}" style="flex: none; background: {{ item.bg }}; border: 1px solid {{ item.borderColor }}; border-left: {{ item.leftBorder }}; border-radius: 8px; padding: 9px 16px; cursor: pointer; animation: {{ item.anim }};">
+            <div style="display: grid; grid-template-columns: 78px minmax(140px, 1.5fr) minmax(120px, 1.1fr) 128px 92px 118px; gap: 12px; align-items: center;">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #8a8e82; font-variant-numeric: tabular-nums; white-space: nowrap;">{{ item.timeStr }}</span>
+              <span style="min-width: 0; display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 13.5px; font-weight: {{ item.nameWeight }}; color: {{ item.nameColor }}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.displayName }}</span>
+                <sc-if value="{{ item.isInternal }}" hint-placeholder-val="{{ false }}">
+                  <span style="flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .04em; color: #6b6f66; background: #eeece4; border-radius: 4px; padding: 2px 6px;">↔ internal</span>
+                </sc-if>
+                <sc-if value="{{ item.isNew }}" hint-placeholder-val="{{ false }}">
+                  <span style="flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .04em; color: #1e6b4e; background: #e4efe7; border-radius: 4px; padding: 2px 6px;">new vendor</span>
+                </sc-if>
+                <sc-if value="{{ item.isInject }}" hint-placeholder-val="{{ false }}">
+                  <span style="flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .04em; color: #c23a2b; background: #f9e4e0; border-radius: 4px; padding: 2px 6px;">inject</span>
+                </sc-if>
+              </span>
+              <span style="min-width: 0; font-size: 12.5px; color: {{ item.subColor }}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ item.sub }}</span>
+              <span style="text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; color: {{ item.amountColor }}; white-space: nowrap;">{{ item.amountStr }}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: {{ item.statusColor }}; white-space: nowrap;">{{ item.status }}</span>
+              <span style="display: flex; align-items: center; justify-content: flex-end; gap: 8px;">
+                <sc-if value="{{ item.isAlert }}" hint-placeholder-val="{{ false }}">
+                  <span style="background: #c23a2b; color: #ffffff; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; border-radius: 5px; padding: 3px 8px;">ALERT</span>
+                </sc-if>
+                <sc-if value="{{ item.isWarn }}" hint-placeholder-val="{{ false }}">
+                  <span style="display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .05em; color: #8a6d1f;"><span style="width: 6px; height: 6px; border-radius: 50%; background: #d9b64a;"></span>warn</span>
+                </sc-if>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; font-variant-numeric: tabular-nums; color: {{ item.scoreColor }}; font-weight: {{ item.scoreWeight }};">{{ item.scoreStr }}</span>
+              </span>
+            </div>
+            <sc-if value="{{ item.isOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top: 9px; padding-top: 9px; border-top: 1px dashed #e2dfd6; display: grid; grid-template-columns: minmax(200px, 1.2fr) minmax(220px, 1fr); gap: 16px;">
+                <div>
+                  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #8a8e82; margin-bottom: 6px;">Why</div>
+                  <sc-if value="{{ item.hasReasons }}" hint-placeholder-val="{{ false }}">
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                      <sc-for list="{{ item.reasons }}" as="r" hint-placeholder-count="1">
+                        <div style="display: flex; gap: 8px; font-size: 13px; color: #2b2e2a;"><span style="color: #a3a79c;">—</span><span>{{ r }}</span></div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ item.noReasons }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size: 13px; color: #8a8e82;">No anomaly signals. Looks routine.</div>
+                  </sc-if>
+                </div>
+                <div>
+                  <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #8a8e82; margin-bottom: 6px;">Score components</div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px 16px;">
+                    <sc-for list="{{ item.comps }}" as="c" hint-placeholder-count="4">
+                      <div style="display: flex; justify-content: space-between; gap: 8px; font-size: 12px;"><span style="color: #6b6f66;">{{ c.k }}</span><span style="font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; color: #2b2e2a;">{{ c.v }}</span></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <sc-if value="{{ graphOn }}" hint-placeholder-val="{{ true }}">
+      <aside style="flex: none; width: 272px; background: #ffffff; border: 1px solid #e2dfd6; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between;">
+          <h2 style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #6b6f66;">Graph</h2>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .05em; color: #a3a79c;">stretch · v0</span>
+        </div>
+        <svg viewBox="0 0 240 190" style="width: 100%; height: auto; display: block;">
+          <line x1="120" y1="95" x2="58" y2="146" stroke="#e2dfd6" stroke-width="1.5"></line>
+          <line x1="120" y1="95" x2="66" y2="48" stroke="#e2dfd6" stroke-width="1.5"></line>
+          <line x1="120" y1="95" x2="182" y2="148" stroke="#e2dfd6" stroke-width="1.5"></line>
+          <line x1="120" y1="95" x2="40" y2="95" stroke="#d8d5cc" stroke-width="1"></line>
+          <line x1="120" y1="95" x2="90" y2="20" stroke="#d8d5cc" stroke-width="1"></line>
+          <line x1="120" y1="95" x2="160" y2="24" stroke="#d8d5cc" stroke-width="1"></line>
+          <line x1="120" y1="95" x2="205" y2="100" stroke="#d8d5cc" stroke-width="1"></line>
+          <line x1="120" y1="95" x2="150" y2="170" stroke="#d8d5cc" stroke-width="1"></line>
+          <line x1="66" y1="48" x2="30" y2="30" stroke="#d8d5cc" stroke-width="1"></line>
+          <line x1="58" y1="146" x2="30" y2="172" stroke="#d8d5cc" stroke-width="1"></line>
+          <circle cx="40" cy="95" r="5" fill="#f7f6f1" stroke="#a3a79c" stroke-width="1.5"></circle>
+          <circle cx="90" cy="20" r="5" fill="#f7f6f1" stroke="#a3a79c" stroke-width="1.5"></circle>
+          <circle cx="160" cy="24" r="5" fill="#f7f6f1" stroke="#a3a79c" stroke-width="1.5"></circle>
+          <circle cx="205" cy="100" r="5" fill="#f7f6f1" stroke="#a3a79c" stroke-width="1.5"></circle>
+          <circle cx="150" cy="170" r="5" fill="#f7f6f1" stroke="#a3a79c" stroke-width="1.5"></circle>
+          <circle cx="30" cy="30" r="4" fill="#f7f6f1" stroke="#a3a79c" stroke-width="1.5"></circle>
+          <circle cx="30" cy="172" r="4" fill="#f7f6f1" stroke="#a3a79c" stroke-width="1.5"></circle>
+          <circle cx="120" cy="95" r="9" fill="#17191b"></circle>
+          <circle cx="58" cy="146" r="7" fill="#17191b"></circle>
+          <circle cx="66" cy="48" r="7" fill="#17191b"></circle>
+          <circle cx="182" cy="148" r="7" fill="#17191b"></circle>
+          <sc-if value="{{ hasInjected }}" hint-placeholder-val="{{ false }}">
+            <line x1="120" y1="95" x2="208" y2="42" stroke="#c23a2b" stroke-width="1.5" style="animation: nodeIn .5s ease-out;"></line>
+            <circle cx="208" cy="42" r="6" fill="#c23a2b" style="animation: nodeIn .5s ease-out;"></circle>
+          </sc-if>
+        </svg>
+        <div style="display: flex; gap: 14px; font-size: 11px; color: #6b6f66;">
+          <span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #17191b;"></span>account</span>
+          <span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f7f6f1; border: 1.5px solid #a3a79c; box-sizing: border-box;"></span>vendor</span>
+          <sc-if value="{{ hasInjected }}" hint-placeholder-val="{{ false }}">
+            <span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #c23a2b;"></span>flagged</span>
+          </sc-if>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <div style="background: #f7f6f1; border-radius: 8px; padding: 8px 10px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: #8a8e82;">Accounts</div><div style="font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums;">4</div></div>
+          <div style="background: #f7f6f1; border-radius: 8px; padding: 8px 10px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: #8a8e82;">Vendors</div><div style="font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums;">{{ vendorCount }}</div></div>
+          <div style="background: #f7f6f1; border-radius: 8px; padding: 8px 10px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: #8a8e82;">Edges</div><div style="font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums;">{{ edgeCount }}</div></div>
+          <div style="background: #f7f6f1; border-radius: 8px; padding: 8px 10px;"><div style="font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: #8a8e82;">Transactions</div><div style="font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums;">{{ totalCount }}</div></div>
+        </div>
+        <p style="margin: 0; font-size: 11px; line-height: 1.5; color: #8a8e82; text-wrap: pretty;">Force layout is a stretch goal — node/edge data is already served by <span style="font-family: 'IBM Plex Mono', monospace;">/api/graph</span>. A flagged counterparty lights up as it arrives.</p>
+      </aside>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showGraphPanel&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Layout&quot;}}">
+class Component extends DCLogic {
+  state = { rows: Component.seed(), openIdx: null, flaggedOnly: false, injected: 0 };
+
+  static seed() {
+    const R = (name, acct, type, cents, status, score, level, reasons, comps, extra) => Object.assign({
+      name, acct, type, cents, status, score, level, reasons: reasons || [], comps: comps || {}, internal: false, isNew: false, inject: false, backfill: true
+    }, extra || {});
+    return [
+      R('Acme Supplies', 'Operating', 'ach', -18000, 'settled', 0.53, 'warn', ['new counterparty'], { new_counterparty: 2.2, account_amount_z: 0.4, population_amount_z: 0.1 }, { isNew: true, time: 'Sep 11 11:15' }),
+      R('Lakeshore IT Services', 'Operating', 'ach', -95600, 'settled', 0.51, 'warn', ['new counterparty'], { new_counterparty: 2.2, account_amount_z: 0.2, population_amount_z: 0.3 }, { isNew: true, time: 'Sep 11 09:42' }),
+      R('Payroll Reserve ↔ Cash (Checking)', 'Payroll Reserve', 'internal_transfer', -1500000, 'settled', 0.05, 'normal', [], { account_amount_z: 0.3 }, { internal: true, time: 'Sep 10 09:00' }),
+      R('Meridian Travel Inc.', 'Operating', 'wire', 1240000, 'settled', 0.14, 'normal', [], { counterparty_amount_z: 0.4, population_amount_z: 0.6 }, { time: 'Sep 09 16:21' }),
+      R('Summit Office Leasing', 'Operating', 'check', -287500, 'pending', 0.52, 'warn', ['new counterparty'], { new_counterparty: 2.2, population_amount_z: 0.5 }, { isNew: true, time: 'Sep 09 10:05' }),
+      R('Operating ↔ Payroll Reserve', 'Operating', 'internal_transfer', -2200000, 'settled', 0.04, 'normal', [], { account_amount_z: 0.2 }, { internal: true, time: 'Sep 08 09:00' }),
+      R('Blue Ridge Coffee Co.', 'Operating', 'card', -6421, 'settled', 0.08, 'normal', [], { counterparty_amount_z: 0.1 }, { time: 'Sep 07 08:31' }),
+      R('Northwind Logistics', 'Operating', 'ach', -204750, 'settled', 0.55, 'warn', ['new counterparty'], { new_counterparty: 2.2, account_amount_z: 0.6 }, { isNew: true, time: 'Sep 05 14:48' }),
+      R('Cash (Checking) ↔ Operating', 'Cash (Checking)', 'internal_transfer', 5000000, 'settled', 0.06, 'normal', [], { account_amount_z: 0.5 }, { internal: true, time: 'Sep 04 09:00' }),
+      R('Meridian Travel Inc.', 'Operating', 'wire', 812500, 'settled', 0.11, 'normal', [], { counterparty_amount_z: 0.2 }, { time: 'Sep 03 11:57' }),
+      R('Granite State Insurance', 'Operating', 'ach', -132400, 'settled', 0.12, 'normal', [], { counterparty_amount_z: 0.3 }, { time: 'Sep 02 07:10' }),
+      R('Crescent Property Group', 'Operating', 'check', -339100, 'settled', 0.12, 'normal', [], { counterparty_amount_z: 0.0, account_amount_z: 0.2 }, { time: 'Sep 01 14:03' }),
+      R('Operating ↔ Tax Reserve', 'Operating', 'internal_transfer', -750000, 'settled', 0.05, 'normal', [], { account_amount_z: 0.2 }, { internal: true, time: 'Sep 01 09:00' })
+    ];
+  }
+
+  money(cents) {
+    const abs = Math.abs(cents) / 100;
+    const s = abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return (cents < 0 ? '\u2212$' : '+$') + s;
+  }
+
+  inject() {
+    const row = {
+      name: 'Totally New Vendor LLC', acct: 'Operating', type: 'wire', cents: -4200000, status: 'pending',
+      score: 0.91, level: 'alert', reasons: ['new counterparty', 'amount 6.2x above account baseline'],
+      comps: { new_counterparty: 2.2, account_amount_z: 3.1, population_amount_z: 1.9, velocity: 0.0 },
+      internal: false, isNew: true, inject: true, backfill: false, time: 'now', anim: true
+    };
+    this.setState(s => ({ rows: [row, ...s.rows], injected: s.injected + 1, openIdx: null }));
+  }
+
+  renderVals() {
+    const { rows, openIdx, flaggedOnly, injected } = this.state;
+    const view = rows.map((r, i) => {
+      const isAlert = r.level === 'alert', isWarn = r.level === 'warn';
+      return {
+        timeStr: r.time,
+        displayName: r.name,
+        nameWeight: isAlert ? 700 : (r.internal ? 500 : 600),
+        nameColor: r.internal ? '#6b6f66' : '#17191b',
+        isInternal: r.internal, isNew: r.isNew && !r.internal, isInject: !!r.inject,
+        sub: r.acct + ' \u00b7 ' + r.type.replace('_', ' '),
+        subColor: r.internal ? '#a3a79c' : '#6b6f66',
+        amountStr: this.money(r.cents),
+        amountColor: r.internal ? '#8a8e82' : (r.cents > 0 ? '#1e6b4e' : '#17191b'),
+        status: r.status,
+        statusColor: r.status === 'pending' || r.status === 'awaiting_approval' ? '#8a6d1f' : '#a3a79c',
+        isAlert, isWarn,
+        scoreStr: r.score.toFixed(2),
+        scoreColor: isAlert ? '#c23a2b' : (isWarn ? '#8a6d1f' : '#a3a79c'),
+        scoreWeight: isAlert ? 700 : 400,
+        bg: isAlert ? '#fdf1ee' : (r.internal ? '#faf9f5' : '#ffffff'),
+        borderColor: isAlert ? '#eec4bc' : '#e6e3da',
+        leftBorder: isAlert ? '4px solid #c23a2b' : (isWarn ? '3px solid #d9b64a' : '3px solid #e6e3da'),
+        anim: r.anim ? 'alertIn .8s ease-out' : 'none',
+        isOpen: openIdx === i,
+        hasReasons: openIdx === i && r.reasons.length > 0,
+        noReasons: openIdx === i && r.reasons.length === 0,
+        reasons: r.reasons,
+        comps: Object.entries(r.comps).map(([k, v]) => ({ k: k.replace(/_/g, ' '), v: v.toFixed(2) })),
+        onToggle: () => this.setState(s => ({ openIdx: s.openIdx === i ? null : i }))
+      };
+    });
+    const visibleRows = flaggedOnly ? view.filter(v => v.isAlert || v.isWarn) : view;
+    const alerts = rows.filter(r => r.level === 'alert').length;
+    return {
+      visibleRows,
+      totalCount: 72 + injected,
+      alertCount: alerts,
+      alertCountColor: alerts > 0 ? '#c23a2b' : '#17191b',
+      connColor: '#1e6b4e', connAnim: 'none', connLabel: 'live',
+      inject: () => this.inject(),
+      toggleFlagged: () => this.setState(s => ({ flaggedOnly: !s.flaggedOnly, openIdx: null })),
+      flagTrackBg: flaggedOnly ? '#1e6b4e' : '#c9c5b8',
+      flagKnobLeft: flaggedOnly ? '13px' : '2px',
+      hasInjected: injected > 0,
+      vendorCount: 37 + (injected > 0 ? 1 : 0),
+      edgeCount: 41 + (injected > 0 ? 1 : 0),
+      graphOn: this.props.showGraphPanel ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>

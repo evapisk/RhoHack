@@ -5,18 +5,29 @@ Signals, each expressed as a z-like magnitude:
   account_amount_z       |log$ - account mean| / account std          (needs >= min_history points)
   population_amount_z    |log$ - mean of ALL tx seen| / population std   (fallback that keeps a
                          statistical signal alive when the vendor/account have little history)
-  new_counterparty       fixed pseudo-z when the vendor has never been seen
+  lookalike_vendor       a brand-new vendor whose name impersonates one already paid
+  new_counterparty       fixed pseudo-z when the vendor has never been seen, counted only
+                         when something else corroborates it (see the gate below)
   velocity               grows with the number of transactions on the account in the last hour
 
 Combination:
   The three amount z's measure the same thing at different granularity, so only the largest
-  counts ("max wins" inside the amount family). Amount, new-vendor and velocity are independent
-  evidence and add up (noisy-OR with an exponential link):
+  counts ("max wins" inside the amount family). Amount, impersonation, new-vendor and velocity
+  are independent evidence and add up (noisy-OR with an exponential link):
 
-      score = 1 - exp(-(amount_z + new_counterparty + velocity) / 3)
+      score = 1 - exp(-(amount_z + lookalike + new_counterparty + velocity) / 3)
 
-  z = 2.1 -> 0.50 (warn), z = 4.2 -> 0.75 (alert). A new vendor alone is a warn; a new vendor
-  receiving an unusually large amount is an alert.
+  evidence 2.1 -> 0.50 (warn), 4.2 -> 0.75 (alert).
+
+The new-counterparty gate:
+  First contact fires on every vendor's first transaction. With 37 vendors across 72 rows,
+  counting it unconditionally made 38 of 72 rows yellow and the median row a warn, which is
+  alert fatigue, not signal. It now contributes only alongside an amount z >= 1.0, a lookalike
+  match, or a velocity burst. Measured on the fixture: warns 38 -> 15, all alerts preserved.
+
+  Impersonation is deliberately NOT gated. Its weight of 4.5 clears alert alone, because
+  invoicing as a vendor you already pay is the whole attack, and the amount is usually
+  designed to look ordinary. Requiring a second signal would miss the real case.
 
 Small-sample guard: the std used in a z-score is floored at max(0.25, 1/sqrt(n-1)) in log space,
 so two data points cannot make a 3x change look like 5 sigma (n=2 -> 1.0, n=5 -> 0.5, n>=17 -> 0.25).
@@ -48,14 +59,20 @@ class ZScoreScorer:
         warn_threshold: float = 0.5,
         alert_threshold: float = 0.75,
         new_counterparty_weight: float = 2.2,
+        new_counterparty_gate: float = 1.0,
+        lookalike_weight: float = 4.5,
         velocity_threshold: int = 5,
+        dormant_hours: float = 24 * 180,
         scale: float = 3.0,
     ) -> None:
         self.min_history = min_history
         self.warn_threshold = warn_threshold
         self.alert_threshold = alert_threshold
         self.new_counterparty_weight = new_counterparty_weight
+        self.new_counterparty_gate = new_counterparty_gate
+        self.lookalike_weight = lookalike_weight
         self.velocity_threshold = velocity_threshold
+        self.dormant_hours = dormant_hours
         self.scale = scale
 
     def score(self, tx: Transaction, f: GraphFeatures) -> AnomalyScore:
@@ -92,12 +109,42 @@ class ZScoreScorer:
                 )
 
         # Amount signals are correlated: only the strongest one counts.
-        evidence = max((components.get(k, 0.0) for k in AMOUNT_COMPONENTS), default=0.0)
+        amount_evidence = max((components.get(k, 0.0) for k in AMOUNT_COMPONENTS), default=0.0)
+        evidence = amount_evidence
 
-        if f.is_new_counterparty:
+        if f.lookalike is not None:
+            m = f.lookalike
+            components["lookalike_vendor"] = self.lookalike_weight
+            reasons.append(
+                f"Name is {m.ratio:.0%} similar to '{m.matched_display_name}', which this business has "
+                f"paid {m.matched_tx_count} time{'s' if m.matched_tx_count != 1 else ''} "
+                f"(${m.matched_total_minor / 100:,.2f}). Possible vendor impersonation."
+            )
+            evidence += self.lookalike_weight
+
+        # First contact with a vendor is worth saying out loud, but on its own it is not
+        # worth escalating: with 37 vendors across 72 transactions it would paint half
+        # the feed yellow. It counts only when something else corroborates it.
+        if f.is_new_counterparty and not f.is_internal_transfer:
             components["new_counterparty"] = self.new_counterparty_weight
             reasons.append(f"First ever transaction with '{tx.counterparty_name or 'unknown counterparty'}'")
-            evidence += self.new_counterparty_weight
+            corroborated = (
+                amount_evidence >= self.new_counterparty_gate
+                or f.lookalike is not None
+                or f.account_tx_last_hour >= self.velocity_threshold
+            )
+            if corroborated:
+                evidence += self.new_counterparty_weight
+            else:
+                # Recorded so the detail panel can show the signal was seen and
+                # deliberately not escalated, rather than silently dropped.
+                components["new_counterparty_gated"] = 1.0
+
+        dormant_hours = f.hours_since_last_tx_to_counterparty
+        if dormant_hours is not None and dormant_hours >= self.dormant_hours:
+            reasons.append(
+                f"First payment to '{tx.counterparty_name}' in {dormant_hours / 24:.0f} days"
+            )
 
         if f.account_tx_last_hour >= self.velocity_threshold:
             velocity = 2.0 + 0.5 * (f.account_tx_last_hour - self.velocity_threshold)

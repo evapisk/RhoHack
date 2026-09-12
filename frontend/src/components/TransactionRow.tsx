@@ -1,25 +1,37 @@
-import { useState } from 'react'
 import { formatMoney, formatTime } from '../api'
 import type { ScoredTransaction } from '../types'
 
 interface Props {
   item: ScoredTransaction
+  open: boolean
+  onToggle: () => void
 }
 
-export function TransactionRow({ item }: Props) {
-  const [open, setOpen] = useState(false)
+export function TransactionRow({ item, open, onToggle }: Props) {
   const { event, anomaly, features } = item
   const tx = event.transaction
   const debit = tx.amount.amount < 0
-  const classes = ['row', anomaly.level, event.backfill ? 'backfill' : 'live', open ? 'open' : '']
+  const impostor = features.lookalike
+  const classes = [
+    'row',
+    anomaly.level,
+    event.backfill ? 'backfill' : 'live',
+    open ? 'open' : '',
+    impostor ? 'impostor' : '',
+    features.is_internal_transfer ? 'internal' : '',
+  ]
 
   return (
-    <li className={classes.join(' ')} onClick={() => setOpen((v) => !v)} title="Click for details">
+    <li className={classes.join(' ')} onClick={onToggle} title="Click for details">
       <div className="row-main">
         <span className="time">{formatTime(tx.initiated_at)}</span>
         <span className="counterparty">
           {tx.counterparty_name ?? 'Unknown counterparty'}
-          {features.is_new_counterparty && <span className="tag new">new vendor</span>}
+          {impostor && <span className="tag impostor">impostor?</span>}
+          {!impostor && features.is_new_counterparty && !features.is_internal_transfer && (
+            <span className="tag new">new vendor</span>
+          )}
+          {features.is_internal_transfer && <span className="tag internal">internal</span>}
         </span>
         <span className="account">
           {tx.account_name ?? tx.account_id}
@@ -39,7 +51,9 @@ export function TransactionRow({ item }: Props) {
           <span className="num">{anomaly.score.toFixed(2)}</span>
         </span>
         <span className="source">
-          {event.source !== 'rho' && <span className={`tag ${event.source}`}>{event.source}</span>}
+          {event.source !== 'rho' && event.source !== 'replay' && (
+            <span className={`tag ${event.source}`}>{event.source}</span>
+          )}
           {event.backfill && <span className="tag backfill">history</span>}
           {event.kind === 'updated' && (
             <span className="tag updated">
@@ -48,21 +62,34 @@ export function TransactionRow({ item }: Props) {
           )}
         </span>
       </div>
+
       {open && (
         <div className="row-detail">
-          {anomaly.reasons.length ? (
-            <ul className="reasons">
-              {anomaly.reasons.map((r) => (
-                <li key={r}>{r}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="muted">No anomaly signals. Looks routine.</p>
-          )}
+          <div className="detail-left">
+            {impostor && (
+              <p className="impostor-callout">
+                Impersonates <b>{impostor.matched_display_name}</b> at{' '}
+                {Math.round(impostor.ratio * 100)}% name similarity. That vendor has been paid{' '}
+                {impostor.matched_tx_count} time{impostor.matched_tx_count === 1 ? '' : 's'},{' '}
+                {formatMoney(impostor.matched_total_minor)} in total.
+              </p>
+            )}
+            {anomaly.reasons.length ? (
+              <ul className="reasons">
+                {anomaly.reasons.map((r) => (
+                  <li key={r}>{r}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">No anomaly signals. Looks routine.</p>
+            )}
+            {(tx.memo || tx.note) && <p className="memo">{tx.memo ?? tx.note}</p>}
+          </div>
+
           <dl className="components">
             {Object.entries(anomaly.components).map(([k, v]) => (
               <div key={k}>
-                <dt>{k}</dt>
+                <dt>{k === 'new_counterparty_gated' ? 'new vendor (not escalated)' : k}</dt>
                 <dd>{v.toFixed(2)}</dd>
               </div>
             ))}
@@ -79,11 +106,14 @@ export function TransactionRow({ item }: Props) {
               <dd>{features.account_tx_count} tx</dd>
             </div>
             <div>
-              <dt>tx id</dt>
-              <dd className="mono">{tx.id}</dd>
+              <dt>accounts using peer</dt>
+              <dd>{features.counterparty_account_count}</dd>
+            </div>
+            <div>
+              <dt>resolved as</dt>
+              <dd>{features.counterparty_resolution}</dd>
             </div>
           </dl>
-          {(tx.memo || tx.note) && <p className="memo">{tx.memo ?? tx.note}</p>}
         </div>
       )}
     </li>

@@ -53,16 +53,37 @@ def test_routine_repeat_is_normal():
     assert "new_counterparty" not in result.components
 
 
-def test_new_vendor_alone_is_a_warning_not_an_alert():
+def test_uncorroborated_new_vendor_is_reported_but_not_escalated():
+    """The gate. First contact at a routine amount is stated, not escalated.
+
+    This replaces an earlier test that asserted a lone new vendor was a warn. Counting
+    it unconditionally made 38 of 72 fixture rows yellow, which is alert fatigue rather
+    than signal, so the product decision changed deliberately.
+    """
     graph, scorer = TransactionGraph(), ZScoreScorer()
     feed(graph, scorer, routine_history())
 
     new_vendor = make_tx("nv", -5100, "Brand New Bakery", "2026-05-10T09:00:00Z")
     result = scorer.score(new_vendor, graph.apply(new_vendor))
 
-    assert result.level == "warn"
+    assert result.level == "normal"
+    # still surfaced to the user, just not escalated
     assert "new_counterparty" in result.components
+    assert result.components["new_counterparty_gated"] == 1.0
     assert any("First ever transaction" in r for r in result.reasons)
+
+
+def test_corroborated_new_vendor_does_escalate():
+    graph, scorer = TransactionGraph(), ZScoreScorer()
+    feed(graph, scorer, routine_history())
+
+    # same new vendor, but the amount is unlike anything this account normally does
+    new_vendor = make_tx("nv", -240_000, "Brand New Bakery", "2026-05-10T09:00:00Z")
+    result = scorer.score(new_vendor, graph.apply(new_vendor))
+
+    assert result.level in ("warn", "alert")
+    assert "new_counterparty_gated" not in result.components
+    assert result.components["account_amount_z"] >= 1.0
 
 
 def test_population_fallback_flags_huge_amount_to_new_vendor_with_no_entity_history():

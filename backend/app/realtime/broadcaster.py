@@ -17,7 +17,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timezone
-from typing import AsyncIterator
+from typing import Any, AsyncIterator
 
 from fastapi import Request
 
@@ -56,6 +56,23 @@ class SSEBroadcaster:
                 self.sent += 1
             except asyncio.QueueFull:
                 self.dropped += 1  # slow consumer; drop rather than stall the pipeline
+
+    async def publish_control(self, event: str, payload: dict[str, Any] | None = None) -> None:
+        """Send a non-transaction frame (reset, scenario) to every connected client.
+
+        The feed dedups rows by (id, status) and the fixture reuses real Rho ids, so a
+        replay after a reset would be silently swallowed by an already-open browser.
+        A reset frame tells clients to flush first. Additive and safe: EventSource
+        ignores events for which no listener is registered.
+        """
+        if not self._clients:
+            return
+        data = json.dumps(payload or {})
+        for q in list(self._clients):
+            try:
+                q.put_nowait((event, data))
+            except asyncio.QueueFull:
+                self.dropped += 1
 
     async def stream(self, request: Request) -> AsyncIterator[str]:
         q = self.subscribe()

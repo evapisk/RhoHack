@@ -37,6 +37,21 @@ export interface TransactionEvent {
   previous_status: string | null
 }
 
+export type NodeKind = 'account' | 'counterparty'
+export type Resolution = 'exact' | 'unique_name' | 'ambiguous_name' | 'external'
+
+/** An existing vendor whose name a brand-new counterparty is impersonating. */
+export interface LookalikeMatch {
+  matched_key: string
+  matched_node_id: string
+  matched_display_name: string
+  ratio: number
+  shared_tokens: string[]
+  matched_tx_count: number
+  matched_total_minor: number
+  matched_last_seen: string | null
+}
+
 export interface GraphFeatures {
   is_new_counterparty: boolean
   counterparty_tx_count: number
@@ -51,6 +66,13 @@ export interface GraphFeatures {
   population_tx_count: number
   population_mean_log_amount: number | null
   population_std_log_amount: number | null
+  is_internal_transfer: boolean
+  counterparty_node_kind: NodeKind
+  counterparty_resolution: Resolution
+  account_node_id: string
+  counterparty_node_id: string
+  counterparty_account_count: number
+  lookalike: LookalikeMatch | null
 }
 
 export interface AnomalyScore {
@@ -70,10 +92,14 @@ export interface ScoredTransaction {
 
 export interface GraphNode {
   id: string
-  kind: 'account' | 'counterparty'
+  kind: NodeKind
   name?: string
   display_name?: string
   tx_count: number
+  total_minor?: number
+  account_type?: string | null
+  ambiguous?: boolean
+  member_ids?: string[]
   [key: string]: unknown
 }
 
@@ -82,18 +108,56 @@ export interface GraphEdge {
   target: string
   tx_count: number
   total_minor: number
+  internal?: boolean
   [key: string]: unknown
 }
 
 export interface GraphPayload {
   nodes: GraphNode[]
   edges: GraphEdge[]
-  stats: { accounts: number; counterparties: number; edges: number; transactions: number }
+  stats: {
+    accounts: number
+    counterparties: number
+    edges: number
+    transactions: number
+    internal_resolved: number
+  }
+}
+
+export interface ScenarioSummary {
+  id: string
+  title: string
+  blurb: string
+  expected_level: Level
+  step_count: number
+}
+
+export interface ScenarioRun {
+  scenario_id: string
+  title: string
+  blurb: string
+  reset: boolean
+  results: ScoredTransaction[]
+  expected_level: Level
+  actual_level: Level
+  matched: boolean
+  elapsed_ms: number
+}
+
+export interface DemoResetResponse {
+  reset: boolean
+  source: 'rho' | 'fixture'
+  accounts: number
+  transactions: number
+  internal_resolved: number
+  elapsed_ms: number
 }
 
 export interface Health {
   status: string
   scorer: string
+  data_source: 'rho' | 'fixture'
+  offline: boolean
   rho_base_url: string
   sse_clients: number
   poller: Record<string, unknown> | null

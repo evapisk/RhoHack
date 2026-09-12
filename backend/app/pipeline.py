@@ -17,6 +17,9 @@ from app.scoring.base import Scorer
 
 log = logging.getLogger(__name__)
 
+# Rebuilt from this template on reset so the key set can never drift.
+_EMPTY_COUNTERS = {"processed": 0, "backfill": 0, "live": 0, "updated": 0, "warn": 0, "alert": 0}
+
 
 class Pipeline:
     def __init__(self, graph: TransactionGraph, scorer: Scorer, bus: EventBus, *, history_size: int = 1000) -> None:
@@ -24,9 +27,20 @@ class Pipeline:
         self.scorer = scorer
         self.bus = bus
         self.history: deque[ScoredTransaction] = deque(maxlen=history_size)
-        self.counters = {"processed": 0, "backfill": 0, "live": 0, "updated": 0, "warn": 0, "alert": 0}
+        self.counters = dict(_EMPTY_COUNTERS)
         self.last: ScoredTransaction | None = None
         bus.subscribe(TOPIC_TRANSACTIONS_NEW, self.handle_transaction)
+
+    def reset(self) -> None:
+        """Clear history and counters in place.
+
+        Identity matters: this object is subscribed to the bus and closed over by the
+        route handlers in main.py. Constructing a replacement would leave the old
+        subscription live and score every transaction twice.
+        """
+        self.history.clear()
+        self.counters = dict(_EMPTY_COUNTERS)
+        self.last = None
 
     async def handle_transaction(self, event: TransactionEvent) -> None:
         tx = event.transaction
