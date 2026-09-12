@@ -1,19 +1,25 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { fetchHealth, fetchRecent, useTransactionStream } from './api'
+import { DemoPanel } from './components/DemoPanel'
+import type { GraphHighlight } from './components/GraphCanvas'
 import { GraphView } from './components/GraphView'
 import { TransactionRow } from './components/TransactionRow'
-import type { ScoredTransaction } from './types'
+import type { Health, ScenarioRun, ScoredTransaction } from './types'
 
 const MAX_ROWS = 500
 const rowKey = (s: ScoredTransaction) => `${s.event.transaction.id}:${s.event.transaction.status}`
-const byNewest = (a: ScoredTransaction, b: ScoredTransaction) => (a.scored_at < b.scored_at ? 1 : a.scored_at > b.scored_at ? -1 : 0)
+const byNewest = (a: ScoredTransaction, b: ScoredTransaction) =>
+  a.scored_at < b.scored_at ? 1 : a.scored_at > b.scored_at ? -1 : 0
 
 export default function App() {
   const [rows, setRows] = useState<ScoredTransaction[]>([])
   const [showBackfill, setShowBackfill] = useState(true)
   const [onlyFlagged, setOnlyFlagged] = useState(false)
-  const [scorer, setScorer] = useState('')
+  const [health, setHealth] = useState<Health | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [selectedKey, setSelectedKey] = useState<string | null>(null)
+  const [graphKey, setGraphKey] = useState(0)
+  const [projector, setProjector] = useState(false)
 
   const upsert = useCallback((incoming: ScoredTransaction[]) => {
     setRows((prev) => {
@@ -24,6 +30,22 @@ export default function App() {
     })
   }, [])
 
+  // A fixture replay delivers 72 rows in a burst. Refetching the graph per row would
+  // mean 72 requests and 72 layout runs, so coalesce them into one.
+  const graphTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const bumpGraph = useCallback(() => {
+    if (graphTimer.current) clearTimeout(graphTimer.current)
+    graphTimer.current = setTimeout(() => setGraphKey((k) => k + 1), 350)
+  }, [])
+  useEffect(() => () => {
+    if (graphTimer.current) clearTimeout(graphTimer.current)
+  }, [])
+
+  const clearFeed = useCallback(() => {
+    setRows([])
+    setSelectedKey(null)
+  }, [])
+
   useEffect(() => {
     fetchRecent(300)
       .then((items) => {
@@ -32,11 +54,43 @@ export default function App() {
       })
       .catch((e) => setError(`Backend unreachable: ${e}`))
     fetchHealth()
-      .then((h) => setScorer(h.scorer))
+      .then(setHealth)
       .catch(() => undefined)
   }, [upsert])
 
-  const status = useTransactionStream(useCallback((s: ScoredTransaction) => upsert([s]), [upsert]))
+  // Press P to switch to projector sizing. One keystroke on stage beats editing CSS.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null
+      if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return
+      if (e.key === 'p' || e.key === 'P') setProjector((v) => !v)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  useEffect(() => {
+    document.body.classList.toggle('projector', projector)
+  }, [projector])
+
+  const handlers = useMemo(
+    () => ({
+      onTransaction: (s: ScoredTransaction) => {
+        upsert([s])
+        bumpGraph()
+      },
+      // The backend rebuilt from the fixture; drop our rows so the replay lands.
+      onReset: clearFeed,
+    }),
+    [upsert, clearFeed, bumpGraph],
+  )
+  const status = useTransactionStream(handlers)
+
+  const onScenarioResult = useCallback((run: ScenarioRun) => {
+    const flagged = run.results[0]
+    if (flagged) setSelectedKey(rowKey(flagged))
+    bumpGraph()
+  }, [bumpGraph])
 
   const visible = useMemo(
     () => rows.filter((r) => (showBackfill || !r.event.backfill) && (!onlyFlagged || r.anomaly.level !== 'normal')),
@@ -55,6 +109,22 @@ export default function App() {
     return { total: rows.length, live, alerts, warns }
   }, [rows])
 
+  const selected = useMemo(
+    () => rows.find((r) => rowKey(r) === selectedKey) ?? null,
+    [rows, selectedKey],
+  )
+
+  const highlight: GraphHighlight | null = useMemo(() => {
+    if (!selected) return null
+    return {
+      accountNodeId: selected.features.account_node_id || null,
+      counterpartyNodeId: selected.features.counterparty_node_id || null,
+      lookalikeNodeId: selected.features.lookalike?.matched_node_id ?? null,
+      ratio: selected.features.lookalike?.ratio ?? null,
+      level: selected.anomaly.level,
+    }
+  }, [selected])
+
   return (
     <div className="app">
       <header>
@@ -63,6 +133,11 @@ export default function App() {
           <span className={`conn ${status}`}>
             <i /> {status}
           </span>
+          {health?.offline && (
+            <span className="pill offline" title="Rho was unreachable; replaying the bundled sandbox data">
+              offline · fixture data
+            </span>
+          )}
         </div>
         <div className="counters">
           <span>
@@ -77,35 +152,45 @@ export default function App() {
           <span className="alert">
             <b>{counts.alerts}</b> alert
           </span>
-          {scorer && <span className="muted">model: {scorer}</span>}
+          {health?.scorer && <span className="muted">model: {health.scorer}</span>}
         </div>
         <div className="controls">
           <label>
-            <input type="checkbox" checked={showBackfill} onChange={(e) => setShowBackfill(e.target.checked)} /> show history
+            <input type="checkbox" checked={showBackfill} onChange={(e) => setShowBackfill(e.target.checked)} /> show
+            history
           </label>
           <label>
-            <input type="checkbox" checked={onlyFlagged} onChange={(e) => setOnlyFlagged(e.target.checked)} /> flagged only
+            <input type="checkbox" checked={onlyFlagged} onChange={(e) => setOnlyFlagged(e.target.checked)} /> flagged
+            only
           </label>
         </div>
       </header>
+
+      <DemoPanel onReset={clearFeed} onResult={onScenarioResult} />
 
       {error && <div className="banner error">{error}</div>}
 
       <main>
         <section className="feed">
           {visible.length === 0 ? (
-            <p className="empty muted">
-              No transactions yet. Backfill runs on first start; try <code>make demo-inject</code>.
-            </p>
+            <p className="empty muted">No transactions yet. Press one of the buttons above to run a scenario.</p>
           ) : (
             <ul>
-              {visible.map((item) => (
-                <TransactionRow key={rowKey(item)} item={item} />
-              ))}
+              {visible.map((item) => {
+                const key = rowKey(item)
+                return (
+                  <TransactionRow
+                    key={key}
+                    item={item}
+                    open={key === selectedKey}
+                    onToggle={() => setSelectedKey((cur) => (cur === key ? null : key))}
+                  />
+                )
+              })}
             </ul>
           )}
         </section>
-        <GraphView />
+        <GraphView highlight={highlight} refreshKey={graphKey} />
       </main>
     </div>
   )

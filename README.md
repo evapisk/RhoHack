@@ -7,12 +7,52 @@ transactions to a live feed in the browser.
 
 ```
  Rho API ──poll──▶ Poller ──TransactionEvent──▶ EventBus ──▶ Pipeline ──ScoredTransaction──▶ SSE ──▶ React feed
- (sandbox)         cursor                      transactions.new   │ graph.apply(tx) → GraphFeatures
+ (sandbox)         cursor                      transactions.new   │ graph.apply(tx) → GraphFeatures    + graph view
                                                                   │ scorer.score(tx, f) → AnomalyScore
- POST /api/demo/inject ──────────────────────▶ (same topic)       └─▶ transactions.scored
+ Demo scenarios ─────────────────────────────▶ (same topic)       └─▶ transactions.scored
 ```
 
-![Live feed with an injected alert expanded](docs/screenshots/feed_detail.png)
+## The fraud this catches
+
+**Vendor impersonation**, also called business email compromise. A company pays Crescent
+Property Group $3,391 in rent by check every month. An invoice arrives from "Crescent
+Property Group LLC" asking for a wire to new bank details. One word different, and the
+payment is authorised by a human who recognises the name.
+
+This is where the graph earns its place. The set of vendors the graph has accumulated is
+what makes the impostor recognisable, and the alert quotes the evidence:
+
+> Name is 92% similar to 'Crescent Property Group', which this business has paid 2 times
+> ($6,782.00). Possible vendor impersonation.
+
+Measured on the sandbox fixture, across all 465 vendor pairs: the highest similarity
+between two genuinely different vendors is **0.556**, while planted impostors land between
+**0.81 and 0.98**. The 0.80 threshold sits in a wide empty band, and a shared-token guard
+stops two unrelated companies matching on "Services LLC".
+
+## Running the demo
+
+Every scenario is one click in the browser. No terminal, and no drift: each run reseeds
+from the fixture first, so pressing the same button ten times produces the same score ten
+times. Press **P** for projector-sized text.
+
+| Button | Story | Scores |
+|---|---|---|
+| Vendor impersonation | The BEC story above | **alert 0.94** |
+| Large payment, unknown vendor | $250,000 to a vendor never paid before | **alert 0.82** |
+| Routine spend | A $51 card charge at a known vendor | **normal 0.30** |
+
+The third button matters as much as the first two. "Does it just flag everything?" is the
+most common question, and a button that stays green answers it in one press.
+
+**It works with no wifi.** If Rho is unreachable, or there is no API key at all, the same
+72 transactions replay from `backend/fixtures/` and every scenario scores identically. The
+header shows an `offline · fixture data` pill so nobody is misled. Rehearse that path with
+`DEMO_OFFLINE=true`.
+
+![Vendor impersonation flagged live, with the impostor node beside the real vendor](docs/screenshots/impersonation.png)
+
+![The impostor node joined to the vendor it imitates by a 92% name match edge](docs/screenshots/impersonation-graph.png)
 
 ## Quickstart
 
@@ -74,6 +114,9 @@ Adding a new source = publish `TransactionEvent` on `transactions.new`. Adding a
 
 | Route | Purpose |
 |---|---|
+| `GET /api/demo/scenarios` | the named scenarios, with the level each one should produce |
+| `POST /api/demo/scenarios/{id}` | reseed from the fixture, run the scenario, return the scored result |
+| `POST /api/demo/reset` | rebuild graph and history from the fixture without restarting |
 | `GET /api/health` | liveness, poller + cursor status, background task state |
 | `GET /api/stream` | SSE. `event: transaction` carries a `ScoredTransaction`; `event: heartbeat` every 15 s |
 | `GET /api/transactions?limit=100&flagged=false` | recent scored transactions, newest first |
@@ -91,10 +134,11 @@ add up (noisy-OR): `score = 1 - exp(-(amount_z + new_counterparty + velocity) / 
 receiving an unusually large amount is an alert. The std used in any z-score is floored at
 `max(0.25, 1/sqrt(n-1))` in log space so two data points cannot make a 3x change look like 5σ.
 
+- `lookalike_vendor`: a brand-new vendor impersonating one already paid. Weight 4.5, which clears alert unaided, because the attack amount is usually designed to look ordinary
 - `counterparty_amount_z`: amount vs this vendor's history (needs `MIN_HISTORY=2` points)
 - `account_amount_z`: amount vs this account's history
 - `population_amount_z`: amount vs **all** transactions seen so far. Keeps a statistical signal alive when the vendor/account have little history (the sandbox has 37 vendors across 72 rows).
-- `new_counterparty`: fixed pseudo-z (2.2 → warn on its own)
+- `new_counterparty`: first contact, 2.2, **counted only when corroborated** by an amount signal, a lookalike, or a velocity burst. Unconditional it made 38 of 72 rows yellow, which is alert fatigue, not signal. Gated it is 15 of 72, with the same three alerts
 - `velocity`: ≥ 5 transactions on the account within an hour
 
 `scoring/autoencoder.py` is a stub with the same interface, a `featurize()` vector, and TODOs describing the training plan.
@@ -132,10 +176,22 @@ frontend/src/
 
 Merge point (hours 7–9): scoring output into the SSE feed. Already wired end to end here; that session is for hardening with real scores, not first integration.
 
+## Internal transfers
+
+39% of sandbox transactions are transfers between the company's own accounts, but Rho
+names the counterparty with the other account's display name ("Cash (Checking)"), so the
+naive graph draws a phantom vendor and every account-to-account path dies in the middle.
+`app/graph/resolver.py` resolves them in four tiers: an exact match on the sibling leg of
+the same `money_movement_id`, then a unique account-name match, then a merged node where a
+name covers several sibling accounts ("Credit Account" covers four), then a real vendor.
+
+The result: 28 transfers resolved, 6 phantom vendors gone (37 counterparty nodes down to
+31), and real account-to-account edges in the graph view, drawn dashed.
+
 ## Next steps / out of scope for hour 0–1
 
 - Autoencoder: implement `fit()` / `score()` in `scoring/autoencoder.py`, train on the backfill rows.
-- Force-directed graph visualization in `GraphView.tsx` (data is already served by `/api/graph`).
+- `counterparty_account_count` is computed by real 2-hop traversal and shown in the row detail, but deliberately **not scored**: every real vendor in the sandbox has fan-in 1, so weighting it would only ever fire on injected data.
 - Poller hardening: `initiated_after=<high water>` per tick, a periodic `status=pending` sweep to catch settlements, metrics.
 - Optional LLM-generated one-line explanation per alert (narrates `AnomalyScore.reasons` into plain English for the demo UI — needs an LLM API key, only worth doing if hours 9–13 have slack).
 - WebSocket variant of the broadcaster if bidirectional needs appear.

@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     alert_threshold: float = 0.75
 
     # Demo helpers
+    demo_offline: bool = False  # force fixture mode, to rehearse the no-wifi path
     demo_replay: bool = False
     demo_replay_interval_seconds: float = 3.0
 
@@ -41,12 +42,19 @@ class Settings(BaseSettings):
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
-    def require_api_key(self) -> None:
+    def api_key_problem(self) -> str | None:
+        """Returns the setup message when the key is missing, rather than raising.
+
+        A missing key used to abort startup, which meant the app could not run at all
+        without network or config. It now degrades to fixture mode instead, so the
+        message is a warning and the wording is unchanged.
+        """
         if not self.rho_api_key.strip():
-            raise RuntimeError(
+            return (
                 "RHO_API_KEY is empty. Copy backend/.env.example to backend/.env and set it "
                 "(the sandbox accepts any non-empty token)."
             )
+        return None
 
 
 def get_settings() -> Settings:

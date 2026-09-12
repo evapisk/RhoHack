@@ -22,6 +22,10 @@ from pydantic import BaseModel, Field
 EventKind = Literal["new", "updated"]
 EventSource = Literal["rho", "replay", "inject"]
 Level = Literal["normal", "warn", "alert"]
+NodeKind = Literal["account", "counterparty"]
+# How a transaction's counterparty was resolved to a graph node. "exact" and the two
+# name tiers mean it was one of our own accounts (an internal transfer), not a vendor.
+Resolution = Literal["exact", "unique_name", "ambiguous_name", "external"]
 
 
 def normalize_counterparty(name: str | None) -> str:
@@ -113,8 +117,30 @@ class TransactionEvent(BaseModel):
     previous_status: str | None = None  # set on kind == "updated"
 
 
+class LookalikeMatch(BaseModel):
+    """An existing counterparty whose name is suspiciously close to a brand-new one.
+
+    Vendor impersonation (business email compromise) is the top B2B payment fraud
+    pattern: an invoice arrives from a name one character off a vendor you already
+    pay, with new bank details. The graph's vendor set is what makes it recognizable.
+    """
+
+    matched_key: str
+    matched_node_id: str
+    matched_display_name: str
+    ratio: float  # difflib.SequenceMatcher ratio, 0..1
+    shared_tokens: list[str] = Field(default_factory=list)
+    matched_tx_count: int = 0
+    matched_total_minor: int = 0  # absolute total already paid to the real vendor
+    matched_last_seen: str | None = None
+
+
 class GraphFeatures(BaseModel):
-    """What TransactionGraph returns for a transaction, computed BEFORE inserting it."""
+    """What TransactionGraph returns for a transaction, computed BEFORE inserting it.
+
+    Every field added after the initial contract carries a default, so constructing
+    GraphFeatures anywhere other than TransactionGraph.features_for stays valid.
+    """
 
     is_new_counterparty: bool
     counterparty_tx_count: int
@@ -124,11 +150,24 @@ class GraphFeatures(BaseModel):
     account_mean_log_amount: float | None
     account_std_log_amount: float | None
     hours_since_last_tx_to_counterparty: float | None
-    account_out_degree: int  # distinct counterparties this account has paid
+    account_out_degree: int  # distinct peers this account has paid (see note below)
     account_tx_last_hour: int  # velocity, relative to the transaction's own timestamp
     population_tx_count: int  # everything seen so far, all accounts / counterparties
     population_mean_log_amount: float | None
     population_std_log_amount: float | None
+
+    # --- graph-derived, added after internal-transfer resolution landed ---
+    # NOTE: account_out_degree now counts sibling accounts too, not just vendors.
+    is_internal_transfer: bool = False
+    counterparty_node_kind: NodeKind = "counterparty"
+    counterparty_resolution: Resolution = "external"
+    account_node_id: str = ""
+    counterparty_node_id: str = ""
+    # 2-hop traversal: how many of our accounts transact with this counterparty.
+    # Computed and displayed, deliberately NOT scored: on the Rho sandbox every real
+    # vendor has fan-in 1, so weighting it would only ever fire on injected data.
+    counterparty_account_count: int = 0
+    lookalike: LookalikeMatch | None = None
 
 
 class AnomalyScore(BaseModel):

@@ -27,6 +27,8 @@ from fastapi.responses import StreamingResponse
 
 from app.bus import TOPIC_TRANSACTIONS_NEW, TOPIC_TRANSACTIONS_SCORED, EventBus
 from app.config import Settings, get_settings
+from app.demo.scenarios import get_scenario, list_scenarios, run_scenario
+from app.demo.seed import bootstrap, seed_from_fixture
 from app.graph.graph import TransactionGraph
 from app.models import ScoredTransaction, TransactionEvent
 from app.pipeline import Pipeline
@@ -56,20 +58,30 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        settings.require_api_key()
         client = RhoClient(settings.rho_base_url, settings.rho_api_key)
-        app.state.accounts = []
-        try:
-            app.state.accounts = await client.list_accounts()
-            graph.seed_accounts(app.state.accounts)
-            log.info("seeded %d accounts from %s", len(app.state.accounts), settings.rho_base_url)
-        except RhoError as exc:
-            log.warning("could not seed accounts from Rho (continuing without): %s", exc)
+        app.state.demo_lock = asyncio.Lock()
 
-        cursor_path = settings.state_dir / "cursor.json"
-        poller = Poller(client, bus, CursorState.load(cursor_path), settings, cursor_path)
-        app.state.poller = poller
-        tasks = [asyncio.create_task(poller.run(), name="poller")]
+        # Live Rho when it answers, the checked-in fixture when it does not. A missing
+        # key or a dead network degrades the demo instead of aborting startup.
+        source, accounts = await bootstrap(
+            graph=graph, pipeline=pipeline, bus=bus, client=client, settings=settings
+        )
+        app.state.data_source = source
+        app.state.accounts = accounts
+
+        tasks: list[asyncio.Task] = []
+        app.state.poller = None
+        if source == "rho":
+            cursor_path = settings.state_dir / "cursor.json"
+            poller = Poller(client, bus, CursorState.load(cursor_path), settings, cursor_path)
+            app.state.poller = poller
+            tasks.append(asyncio.create_task(poller.run(), name="poller"))
+        else:
+            # No poller in fixture mode: one that fails every 5s only pollutes the log.
+            await seed_from_fixture(
+                graph=graph, pipeline=pipeline, bus=bus,
+                fixtures_dir=settings.fixtures_dir, accounts=accounts, source="fixture",
+            )
 
         app.state.replay = None
         if settings.demo_replay:
@@ -109,9 +121,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             t.get_name(): ("running" if not t.done() else f"stopped: {t.exception()!r}" if not t.cancelled() and t.exception() else "stopped")
             for t in tasks
         }
+        source = getattr(request.app.state, "data_source", "rho")
         return {
             "status": "ok",
             "scorer": scorer.name,
+            "data_source": source,
+            "offline": source == "fixture",
             "rho_base_url": settings.rho_base_url,
             "sse_clients": broadcaster.client_count,
             "poller": poller.status() if poller else None,
@@ -151,9 +166,43 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         """Self-trigger hook: poll Rho immediately instead of waiting for the next interval tick."""
         poller: Poller | None = getattr(request.app.state, "poller", None)
         if poller is None:
-            raise HTTPException(status_code=503, detail="poller not running")
+            raise HTTPException(status_code=503, detail="poller not running (fixture mode)")
         poller.trigger_now()
         return {"triggered": True}
+
+    @app.get("/api/demo/scenarios")
+    async def demo_scenarios() -> dict[str, Any]:
+        return {"scenarios": list_scenarios()}
+
+    @app.post("/api/demo/scenarios/{scenario_id}")
+    async def demo_run_scenario(scenario_id: str, request: Request) -> dict[str, Any]:
+        scenario = get_scenario(scenario_id)
+        if scenario is None:
+            raise HTTPException(status_code=404, detail=f"unknown scenario {scenario_id!r}")
+        async with request.app.state.demo_lock:
+            return await run_scenario(
+                scenario,
+                graph=graph,
+                pipeline=pipeline,
+                bus=bus,
+                broadcaster=broadcaster,
+                fixtures_dir=settings.fixtures_dir,
+                accounts=getattr(request.app.state, "accounts", []),
+            )
+
+    @app.post("/api/demo/reset")
+    async def demo_reset(request: Request) -> dict[str, Any]:
+        """Rebuild graph and history from the fixture without restarting the server."""
+        async with request.app.state.demo_lock:
+            result = await seed_from_fixture(
+                graph=graph,
+                pipeline=pipeline,
+                bus=bus,
+                fixtures_dir=settings.fixtures_dir,
+                accounts=getattr(request.app.state, "accounts", None),
+                broadcaster=broadcaster,
+            )
+        return {"reset": True, **result.as_dict(), "graph": graph.stats(), "counters": pipeline.counters}
 
     @app.post("/api/demo/inject", response_model=ScoredTransaction)
     async def inject(
