@@ -30,6 +30,8 @@ export interface PositionedGraph {
   byId: Map<string, PositionedNode>
   width: number
   height: number
+  /** Accounts with zero transactions ever, dropped from the picture (see layoutGraph). */
+  omittedCount: number
 }
 
 export interface ExtraLink {
@@ -63,10 +65,21 @@ export function layoutGraph(
   payload: GraphPayload,
   opts: { width: number; height: number; extraLinks?: ExtraLink[]; ticks?: number },
 ): PositionedGraph {
-  const { width, height, extraLinks = [], ticks = 420 } = opts
+  const { width, height, extraLinks = [], ticks = 700 } = opts
 
-  const nodes: PositionedNode[] = payload.nodes.map((n, i) => {
-    const angle = (i / Math.max(payload.nodes.length, 1)) * Math.PI * 2
+  // A zero-transaction account (seeded from GET /accounts but never touched by a
+  // transaction) has no edges, so the force layout has nothing to pull it toward --
+  // it just drifts to whatever empty corner repulsion pushes it into and sits there
+  // as an unlabeled, unexplained square. It carries no information on a *transaction*
+  // graph, so it's dropped from the picture (the accounts stat tile still counts it).
+  // Keep anything referenced by an extraLink (e.g. the impersonated vendor/impostor
+  // pair) regardless, so the highlight feature can never be broken by this filter.
+  const linked = new Set(extraLinks.flatMap((l) => [l.source, l.target]))
+  const keptRaw = payload.nodes.filter((n) => n.tx_count > 0 || linked.has(n.id))
+  const omittedCount = payload.nodes.length - keptRaw.length
+
+  const nodes: PositionedNode[] = keptRaw.map((n, i) => {
+    const angle = (i / Math.max(keptRaw.length, 1)) * Math.PI * 2
     const ring = n.kind === 'account' ? Math.min(width, height) * 0.17 : Math.min(width, height) * 0.38
     return {
       ...n,
@@ -100,10 +113,10 @@ export function layoutGraph(
       forceLink<PositionedNode, LinkDatum>(links)
         .id((d) => d.id)
         // Pull an impostor tight against the vendor it imitates, so the two land adjacent.
-        .distance((d) => (d.lookalike ? 46 : d.internal ? 46 : 74))
-        .strength((d) => (d.lookalike ? 1 : 0.5)),
+        .distance((d) => (d.lookalike ? 52 : d.internal ? 56 : 92))
+        .strength((d) => (d.lookalike ? 1 : 0.4)),
     )
-    .force('charge', forceManyBody().strength(-150).distanceMax(260))
+    .force('charge', forceManyBody().strength(-320).distanceMax(340))
     // forceX/forceY rather than forceCenter: this graph has several disconnected
     // components, and a single centring force lets them drift apart until the clamp
     // stacks them along the edges. Independent axis springs keep each one in frame.
@@ -111,17 +124,27 @@ export function layoutGraph(
     .force('y', forceY<PositionedNode>(height / 2).strength(0.09))
     .force(
       'collide',
+      // Padding well past the node's own radius: collision only knows about the
+      // circle/square, but a label's text extends further, so without headroom here
+      // the *labels* still end up overlapping a neighboring node.
       forceCollide<PositionedNode>()
-        .radius((d) => d.r + (d.kind === 'account' ? 16 : 11))
-        .strength(0.9),
+        .radius((d) => d.r + (d.kind === 'account' ? 38 : 16))
+        .strength(1),
     )
   sim.stop()
   sim.tick(ticks)
 
-  const pad = 16
+  // Account nodes are always labeled (see GraphCanvas), and text-anchor="middle" means
+  // a long name like "Reserve Checking" extends well past the node's own radius on
+  // both sides -- clamping only to `r` let labels get clipped by the canvas edge.
+  // Vendor labels are shorter-lived (busiest few, or a focused highlight) so a smaller
+  // fixed pad is enough for them.
+  const padY = 26
+  const estHalfLabelWidth = (n: PositionedNode) => (n.kind === 'account' ? Math.min(78, 10 + n.label.length * 3.3) : 14)
   for (const n of nodes) {
-    n.x = Math.max(pad + n.r, Math.min(width - pad - n.r, n.x ?? width / 2))
-    n.y = Math.max(pad + n.r, Math.min(height - pad - n.r, n.y ?? height / 2))
+    const halfW = Math.max(n.r, estHalfLabelWidth(n))
+    n.x = Math.max(halfW, Math.min(width - halfW, n.x ?? width / 2))
+    n.y = Math.max(padY + n.r, Math.min(height - padY - n.r, n.y ?? height / 2))
   }
 
   const byId = new Map(nodes.map((n) => [n.id, n]))
@@ -143,7 +166,7 @@ export function layoutGraph(
     }
   })
 
-  return { nodes, edges, byId, width, height }
+  return { nodes, edges, byId, width, height, omittedCount }
 }
 
 /** Signature that changes only when the topology does, so layout is not recomputed per row. */

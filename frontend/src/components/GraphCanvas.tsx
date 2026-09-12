@@ -34,14 +34,19 @@ export function GraphCanvas({ layout, highlight, entering = NONE, alertNodeIds =
   const isFocusEdge = (source: string, target: string) => focus.has(source) && focus.has(target)
 
   // With ~48 nodes in a sidebar, labelling everything is an unreadable pile. Label the
-  // focused subgraph when there is one, otherwise only the busiest handful.
-  const busiest = new Set(
+  // focused subgraph when there is one; otherwise, always label accounts -- there are
+  // only a handful and they're the graph's fixed anchors, an unlabeled square reads as
+  // a mistake -- plus the busiest few vendors. (A blended "top 7 by tx_count regardless
+  // of kind" used to pick almost entirely accounts anyway, since one account touches
+  // many vendors, so vendors went unlabeled by default; this just makes that explicit.)
+  const busiestVendors = new Set(
     [...layout.nodes]
+      .filter((n) => n.kind === 'counterparty')
       .sort((a, b) => b.tx_count - a.tx_count)
-      .slice(0, 7)
+      .slice(0, 5)
       .map((n) => n.id),
   )
-  const showLabel = (n: PositionedNode) => (dimmed ? focus.has(n.id) : busiest.has(n.id))
+  const showLabel = (n: PositionedNode) => (dimmed ? focus.has(n.id) : n.kind === 'account' || busiestVendors.has(n.id))
 
   // "Crescent Property Group" and "Crescent Property Group LLC" both truncate to the
   // same string at 22 characters, which destroys the one comparison this picture

@@ -5,8 +5,8 @@ import { useTweenedLayout } from '../graph/useTweenedLayout'
 import type { GraphPayload } from '../types'
 import { GraphCanvas, type GraphHighlight } from './GraphCanvas'
 
-const WIDTH = 470
-const HEIGHT = 430
+const WIDTH = 600
+const HEIGHT = 520
 
 interface Props {
   highlight: GraphHighlight | null
@@ -101,6 +101,12 @@ export function GraphView({ highlight, refreshKey, alertNodeIds }: Props) {
       <p className="muted small">
         Dashed grey edges are transfers between this business's own accounts, resolved from
         counterparty names back to real accounts.
+        {layout && layout.omittedCount > 0 && (
+          <>
+            {' '}
+            {layout.omittedCount} account{layout.omittedCount === 1 ? '' : 's'} with no transactions omitted.
+          </>
+        )}
       </p>
     </aside>
   )
