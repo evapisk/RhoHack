@@ -45,10 +45,10 @@ class Pipeline:
             self.counters[anomaly.level] += 1
             if not event.backfill:
                 log.info(
-                    "%s %.2f  $%,.2f  %s -> %s  [%s]",
+                    "%s %.2f  $%s  %s -> %s  [%s]",
                     anomaly.level.upper(),
                     anomaly.score,
-                    tx.amount_major,
+                    f"{tx.amount_major:,.2f}",
                     tx.account_name,
                     tx.counterparty_name,
                     "; ".join(anomaly.reasons),
