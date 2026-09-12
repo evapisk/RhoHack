@@ -14,6 +14,7 @@ from app.bus import TOPIC_TRANSACTIONS_NEW, TOPIC_TRANSACTIONS_SCORED, EventBus
 from app.graph.graph import TransactionGraph
 from app.models import ScoredTransaction, TransactionEvent
 from app.scoring.base import Scorer
+from app.scoring.vendor_lookup import VendorVerifier, apply_vendor_verification
 
 log = logging.getLogger(__name__)
 
@@ -22,9 +23,18 @@ _EMPTY_COUNTERS = {"processed": 0, "backfill": 0, "live": 0, "updated": 0, "warn
 
 
 class Pipeline:
-    def __init__(self, graph: TransactionGraph, scorer: Scorer, bus: EventBus, *, history_size: int = 1000) -> None:
+    def __init__(
+        self,
+        graph: TransactionGraph,
+        scorer: Scorer,
+        bus: EventBus,
+        *,
+        history_size: int = 1000,
+        verifier: VendorVerifier | None = None,
+    ) -> None:
         self.graph = graph
         self.scorer = scorer
+        self.verifier = verifier
         self.bus = bus
         self.history: deque[ScoredTransaction] = deque(maxlen=history_size)
         self.counters = dict(_EMPTY_COUNTERS)
@@ -47,6 +57,21 @@ class Pipeline:
         # A status change is not a new money movement: re-score against the graph without re-inserting.
         features = self.graph.apply(tx) if event.kind == "new" else self.graph.features_for(tx)
         anomaly = self.scorer.score(tx, features)
+        # Web lookup only for a live first contact with an outside vendor. Never on backfill:
+        # a fixture replay has 31 first-seen vendors and would spend 31 calls per reset.
+        if (
+            self.verifier is not None
+            and event.kind == "new"
+            and not event.backfill
+            and features.is_new_counterparty
+            and not features.is_internal_transfer
+        ):
+            anomaly = apply_vendor_verification(
+                anomaly,
+                await self.verifier.verify(tx.counterparty_name),
+                scale=getattr(self.scorer, "scale", 3.0),
+                alert=getattr(self.scorer, "alert_threshold", 0.75),
+            )
         scored = ScoredTransaction(event=event, features=features, anomaly=anomaly, scored_at=datetime.now(timezone.utc))
 
         self.history.append(scored)
