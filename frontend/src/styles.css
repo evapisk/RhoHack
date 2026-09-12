@@ -404,3 +404,54 @@ body.projector .stats dd { font-size: var(--fs-lg); }
 .graph-panel .small { margin-bottom: 0; font-size: 11px; line-height: 1.5; color: var(--faint); text-wrap: pretty; }
 .error { color: var(--alert); }
 code { font-family: var(--mono); background: var(--internal-wash); padding: 1px 5px; border-radius: 4px; }
+
+/* ---------- attack replay ---------- */
+.demo-btn.replay { background: var(--text); border-color: var(--text); color: var(--panel); font-weight: 600; }
+.demo-btn.replay:hover:not(:disabled) { background: #000; border-color: #000; }
+
+.story {
+  margin-top: 14px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  padding: 16px 18px; animation: enter .3s ease-out;
+}
+.story.playing { border-color: var(--border-firm); }
+.story-top { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.story-title { flex: 1; min-width: 220px; }
+.story .cap { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.story.playing .story-title .cap { color: var(--alert); }
+.story-title h2 { margin: 4px 0 0; font-size: var(--fs-lg); font-weight: 600; }
+.story-meter { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.story-meter b { font-size: 34px; line-height: 1.1; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--alert); }
+.story-meter-sub { font-size: 11px; color: var(--faint); }
+.story-close { border: 0; background: none; color: var(--faint); font-size: 20px; line-height: 1; cursor: pointer; padding: 0 2px; }
+.story-close:hover { color: var(--text); }
+
+.story-stages {
+  list-style: none; margin: 14px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;
+}
+@media (max-width: 900px) { .story-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stage {
+  display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--sunk); transition: background .3s, border-color .3s, opacity .3s;
+}
+.stage.pending { opacity: .5; }
+.stage-num { font-family: var(--mono); font-size: 10.5px; color: var(--faint); }
+.stage-title { font-weight: 600; font-size: var(--fs-sm); }
+.stage-outcome { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.stage-detail { font-size: 11.5px; color: var(--text-soft); text-wrap: pretty; }
+.stage.active { background: var(--panel); border-color: var(--text); animation: stage-live 1.2s ease-in-out infinite; }
+.stage.scored.normal { background: var(--accent-wash); border-color: rgba(30, 107, 78, .35); }
+.stage.scored.normal .stage-outcome { color: var(--accent); }
+.stage.scored.warn .stage-outcome { color: var(--warn); }
+.stage.scored.alert { background: var(--alert-wash); border-color: var(--alert); animation: stage-caught .5s ease-out; }
+.stage.scored.alert .stage-outcome { color: var(--alert); font-weight: 600; }
+@keyframes stage-live { 50% { border-color: var(--fainter); } }
+@keyframes stage-caught { from { transform: scale(1.04); box-shadow: 0 0 0 4px var(--alert-wash); } }
+
+.story-narration { margin: 12px 0 0; font-size: var(--fs-md); color: var(--text); text-wrap: pretty; min-height: 1.5em; }
+.story.finished .story-narration { font-weight: 600; }
+body.projector .story-meter b { font-size: 46px; }
+body.projector .story-narration { font-size: var(--fs-lg); }
+@media (prefers-reduced-motion: reduce) {
+  .story, .stage.active, .stage.scored.alert { animation: none; }
+}

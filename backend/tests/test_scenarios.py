@@ -31,7 +31,7 @@ async def _run(rig, scenario_id: str):
     return await run_scenario(
         get_scenario(scenario_id),
         graph=graph, pipeline=pipeline, bus=bus, broadcaster=broadcaster,
-        fixtures_dir=FIXTURES, accounts=accounts,
+        fixtures_dir=FIXTURES, accounts=accounts, pace=0,
     )
 
 
