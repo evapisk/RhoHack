@@ -9,16 +9,19 @@ import type {
   StoryEvent,
 } from './types'
 
-// All calls are relative: Vite proxies /api to the backend in dev.
+// Calls are relative by default: Vite proxies /api to the backend in dev.
+// Set VITE_API_BASE (e.g. https://rhoguard-api.onrender.com) at build time when the
+// backend lives on another origin; it must then list this origin in CORS_ORIGINS.
+const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/$/, '')
 
 async function getJson<T>(url: string): Promise<T> {
-  const res = await fetch(url)
+  const res = await fetch(API_BASE + url)
   if (!res.ok) throw new Error(`${res.status} ${res.statusText} for ${url}`)
   return (await res.json()) as T
 }
 
 async function postJson<T>(url: string, body?: unknown): Promise<T> {
-  const res = await fetch(url, {
+  const res = await fetch(API_BASE + url, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -65,7 +68,7 @@ export function useTransactionStream(handlers: StreamHandlers): StreamStatus {
   }, [handlers])
 
   useEffect(() => {
-    const es = new EventSource('/api/stream')
+    const es = new EventSource(API_BASE + '/api/stream')
     es.onopen = () => setStatus('live')
     es.onerror = () => setStatus('reconnecting')
     es.addEventListener('heartbeat', () => setStatus('live'))

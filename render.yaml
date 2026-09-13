@@ -1,0 +1,27 @@
+# Render Blueprint: deploys the FastAPI backend as a free web service.
+# https://render.com/docs/blueprint-spec
+# Free tier notes: spins down after ~15 min idle (first request then takes ~30-60s),
+# and the filesystem is ephemeral, so the poller cursor resets on each boot (harmless:
+# BACKFILL_ON_START rebuilds the graph from the static sandbox feed).
+services:
+  - type: web
+    name: rhoguard-api
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: RHO_API_KEY
+        value: sandbox-any-token
+      - key: RHO_BASE_URL
+        value: https://rhoapi-sandbox.rho.co/api/v1
+      - key: CORS_ORIGINS
+        value: https://rhoguard.vercel.app,https://rhoguard-evapisks-projects.vercel.app,http://localhost:5173,http://127.0.0.1:5173
+      - key: STATE_DIR
+        value: .state
+      - key: FIXTURES_DIR
+        value: fixtures
+      - key: LOG_LEVEL
+        value: INFO
