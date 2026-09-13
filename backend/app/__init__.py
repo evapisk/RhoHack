@@ -1,1 +1,1 @@
-"""Rho Transaction Graph backend: poller -> graph -> scorer -> SSE."""
+"""RhoGuard backend: poller -> graph -> scorer -> SSE."""

@@ -310,7 +310,7 @@ wheels = [
 ]
 
 [[package]]
-name = "rho-transaction-graph-backend"
+name = "rhoguard-backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

@@ -169,7 +169,7 @@ export default function App() {
     <div className="app">
       <header>
         <div className="brand">
-          <h1>Rho Transaction Graph</h1>
+          <h1>RhoGuard</h1>
           <span className={`conn ${status}`}>
             <i /> {status}
           </span>

@@ -108,7 +108,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             if verifier is not None:
                 await verifier.aclose()
 
-    app = FastAPI(title="Rho Transaction Graph", version="0.1.0", lifespan=lifespan)
+    app = FastAPI(title="RhoGuard", version="0.1.0", lifespan=lifespan)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origin_list,

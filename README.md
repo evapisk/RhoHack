@@ -1,6 +1,6 @@
 <div align="center">
 
-# Rho Transaction Graph
+# RhoGuard
 
 ### It remembers every vendor you have ever paid. So it notices when someone is only *pretending* to be one.
 
@@ -27,7 +27,7 @@ A company pays **Crescent Property Group** $3,391 in rent, by check, every month
 
 That is business email compromise, the most expensive fraud in business banking. The FBI's Internet Crime Complaint Center logged **$2.9 billion** in reported losses from it in 2023. No amount threshold catches it, because the attacker's whole job is to make the number look ordinary. No blocklist catches it, because the name has never been seen before.
 
-Rho Transaction Graph catches it because it knows who this business pays:
+RhoGuard catches it because it knows who this business pays:
 
 > **ALERT 0.94** — Name is 92% similar to 'Crescent Property Group', which this business has paid 2 times ($6,782.00). Possible vendor impersonation.
 
